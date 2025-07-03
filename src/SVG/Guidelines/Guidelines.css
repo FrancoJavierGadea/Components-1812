@@ -1,0 +1,24 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+:host svg {
+    display: block;
+
+    .Guidelines path {
+        stroke-width: 1;
+        stroke: #777;
+        opacity: 1;
+        stroke-dasharray: none;
+    }
+    .Guidelines-x-label, .Guidelines-y-label  {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

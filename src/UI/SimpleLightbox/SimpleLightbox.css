@@ -1,0 +1,103 @@
+:host {
+
+    --buttons-color: white;
+    --buttons-hover-color: color-mix(in srgb, var(--buttons-color), black 20%);
+    --buttons-disabled-color: color-mix(in srgb, var(--buttons-color), black 50%);
+    --background-color: #000000b9;
+
+    position: fixed;
+    z-index: 1000;
+    cursor: initial;
+    
+    animation-name: image-overlay-position-fade-in, overlay-bg-fade-in;
+    animation-duration: 0.5s, 0.5s;
+    animation-delay: 0s, 0.4s;
+    animation-fill-mode: forwards, forwards;
+    animation-timing-function: ease-in-out, ease-in-out;
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: scale-down;
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+    }
+
+    .top-controls {
+        visibility: hidden;
+        position: absolute;
+        top: 15px;  right: 15px;
+        padding-inline: 10px;
+
+        animation: overlay-controls-fade-in 0.5s step-end 0.4s forwards;  
+    }
+
+    button {
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 20px;
+
+        &[disabled] {
+            color: var(--buttons-disabled-color);
+        }
+        &:hover {
+            color: var(--buttons-hover-color);
+        }
+    }
+
+    .next-button, .previous-button {
+        visibility: hidden;
+        font-size: 40px;
+        height: 80%;
+
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+
+        border: none;
+        background-color: transparent;
+        color: white;
+
+        animation: overlay-controls-fade-in 0.5s step-end 0.5s forwards; 
+    }
+    .next-button {
+        right: 10px;
+    }
+    .previous-button {
+        left: 10px;
+    }
+}
+
+@keyframes image-overlay-position-fade-in {
+
+    to {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    } 
+}
+
+@keyframes overlay-bg-fade-in {
+    
+    to {
+        background-color: var(--background-color);
+    }
+}
+
+@keyframes overlay-controls-fade-in {
+    
+    to {
+        visibility: visible;
+    }
+}
+
+

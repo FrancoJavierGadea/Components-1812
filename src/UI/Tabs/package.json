@@ -1,0 +1,15 @@
+{
+    "name": "@web-components/custom-tabs",
+    "description": "Custom Tabs component",
+    "keywords": ["web-components", "web-components-library", "tabs", "custom-tabs"],
+    "author": "Franco Javier Gadea",
+    "license": "MIT",
+    "version": "0.0.1",
+    "type": "module",
+    "exports": {
+        "./src": "./src/index.js",
+        "./src/Tabs": "./src/Tabs.js",
+        "./src/Tabs.css": "./src/Tabs.css",
+        "./src/define": "./src/define.js"
+    }
+}
