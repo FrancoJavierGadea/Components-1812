@@ -1,5 +1,10 @@
+![npm](https://img.shields.io/npm/v/@components-1812/grid)
+![jsDelivr hits](https://data.jsdelivr.com/v1/package/npm/@components-1812/grid/badge)
+
+
 # SVG Grid Custom Element
 
+A **web component** that generates an **SVG-based** grid of lines with optional **radial gradient** effects, ideal for creating dynamic backgrounds or overlay patterns.
 
 ## Installation
 
@@ -8,6 +13,8 @@
 ```bash
 npm install @components-1812/grid
 ```
+
+- [`Grid package`](https://www.npmjs.com/package/@components-1812/grid)
 
 #### CDN
 
