@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            width: 100%;
+            height: 100%;
+        }
+        custom-grid:not([ready]), 
+        custom-grid:not([ready-links]) {
+            display: none;
+        }
+        custom-grid {
+            --line-width: 2px;
+            --line-color: #fff;
+            --line-opacity: 1;
+            --line-dasharray: none;
+        }
+    </style>
+</head>
+<body>
+
+    <custom-grid size="30" radial-gradient="50%, 50%, 50%" follow-mouse></custom-grid>
+    
+    <script type="module">
+        import Grid from "https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.2/src/Grid.min.js";
+
+        console.log(Grid);
+
+        Grid.stylesSheets.links.push("https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.2/src/Grid.min.css");
+
+        customElements.define('custom-grid', Grid);
+    </script>
+</body>
+</html>

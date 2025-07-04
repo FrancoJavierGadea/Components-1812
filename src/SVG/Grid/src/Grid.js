@@ -36,12 +36,30 @@ export class Grid extends HTMLElement {
         </svg>
         `;
 
-        Grid.stylesSheets.links.forEach((styleSheet) => {
+        Promise.allSettled(
+            Grid.stylesSheets.links.map((styleSheet) => {
 
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = styleSheet;
-            this.shadowRoot.prepend(link);
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = styleSheet;
+
+                const { promise, resolve, reject } = Promise.withResolvers();
+
+                link.addEventListener('load', () => resolve({link, href: styleSheet, status: 'loaded'}));
+                link.addEventListener('error', () => reject({link, href: styleSheet, status: 'error'}));
+
+                this.shadowRoot.prepend(link);
+
+                return promise;
+            })
+        )
+        .then((results) => {
+
+            this.dispatchEvent(new CustomEvent('ready-links', {
+                detail: { results: results.map(r => r.value || r.reason) }
+            }));
+
+            this.setAttribute('ready-links', '');
         });
 
         Grid.stylesSheets.raw.forEach((style) => {
@@ -54,34 +72,44 @@ export class Grid extends HTMLElement {
         this.shadowRoot.adoptedStyleSheets = Grid.stylesSheets.adopted;
     }
 
+    //MARK: Lifecycle callbacks
     connectedCallback(){
 
         this.#updateGrid();
 
-        if(this.radialGradient){
+        if(this.hasAttribute('radial-gradient')){
 
-            const [centerX, centerY, radius] = this.radialGradient.split(',').map((value) => value.trim());
+            const [centerX, centerY, radius] = this.getAttribute('radial-gradient').split(',').map((value) => value.trim());
 
             this.addRadialGradient({centerX, centerY, radius});
 
-            if(this.followMouse){
+            if(this.hasAttribute('follow-mouse')){
 
-                this.addEventListener('mousemove', this.#mouseMoveHandler);
-                this.addEventListener('mouseleave', this.#mouseLeaveHandler);
+                if(this.getAttribute('follow-mouse') === 'global'){
+
+                    document.addEventListener('mousemove', this.#mouseMoveHandler);
+                    document.addEventListener('mouseleave', this.#mouseLeaveHandler);
+                }
+                else{
+
+                    this.addEventListener('mousemove', this.#mouseMoveHandler);
+                    this.addEventListener('mouseleave', this.#mouseLeaveHandler);
+                }
             }
         }
 
-        this.setAttribute('ready', '');
 
+        this.dispatchEvent(new CustomEvent('ready'));
+        this.setAttribute('ready', '');
     }   
 
     disconnectedCallback(){
 
-        this.removeEventListener('mousemove', this.#mouseMoveHandler);
-        this.removeEventListener('mouseleave', this.#mouseLeaveHandler);
+        this.#clearListeners();
     }
 
 
+    //MARK: update grid
     #updateGrid(){
 
         const horizontalLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -96,7 +124,7 @@ export class Grid extends HTMLElement {
 
             path.setAttribute('d', `M ${i} 0 L ${i} ${this.height}`);
 
-            horizontalLines.appendChild(path);
+            horizontalLines.append(path);
         }
 
         for(let i = 0; i < this.height; i += this.size){
@@ -105,18 +133,25 @@ export class Grid extends HTMLElement {
 
             path.setAttribute('d', `M 0 ${i} L ${this.width} ${i}`);
 
-            verticalLines.appendChild(path);
+            verticalLines.append(path);
         }
 
         this.shadowRoot.querySelector('svg .Grid').replaceChildren(horizontalLines, verticalLines);
     }
 
-    addRadialGradient({centerX = '50%', centerY = '50%', radius = '50%' } = {}){
+    //MARK: add radial gradient
+    /**
+     * Adds a radial gradient effect to the grid lines.
+     * 
+     * @param {{centerX: string, centerY: string, radius: string}} params 
+     */
+    addRadialGradient(params = {}){
+
+        const {centerX = '50%', centerY = '50%', radius = '50%'} = params;
 
         const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
         
         defs.innerHTML = `
-
             <linearGradient id="grid-linear-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="var(--line-color)" stop-opacity="1" />
                 <stop offset="100%" stop-color="var(--line-color)" stop-opacity="0" />
@@ -133,9 +168,12 @@ export class Grid extends HTMLElement {
         this.shadowRoot.querySelector('svg .Grid').style.setProperty('--line-color', 'url(#grid-radial-gradient)');
     }
 
+
+    //MARK: Handler events
     #mouseMoveHandler = (e) => {
 
-        const { offsetX: x, offsetY: y } = e;
+        const x = this.getAttribute('follow-mouse') === 'global' ? e.clientX : e.offsetX;
+        const y = this.getAttribute('follow-mouse') === 'global' ? e.clientY : e.offsetY;
 
         this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cx', x);
         this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cy', y);
@@ -144,7 +182,7 @@ export class Grid extends HTMLElement {
     }
     #mouseLeaveHandler = () => {
 
-        const [centerX, centerY, radius] = this.radialGradient.split(',').map((value) => value.trim());
+        const [centerX, centerY, radius] = this.getAttribute('radial-gradient').split(',').map((value) => value.trim());
 
         this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cx', centerX);
         this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cy', centerY);
@@ -152,6 +190,15 @@ export class Grid extends HTMLElement {
         this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('fy', centerY);
     }
 
+    #clearListeners(){
+        
+        document.removeEventListener('mousemove', this.#mouseMoveHandler);
+        document.removeEventListener('mouseleave', this.#mouseLeaveHandler);
+        this.removeEventListener('mousemove', this.#mouseMoveHandler);
+        this.removeEventListener('mouseleave', this.#mouseLeaveHandler);
+    }
+
+    //MARK: Getters and Setters
     set size(value){
         value ? this.setAttribute('size', value) : this.removeAttribute('size');
     }
@@ -172,18 +219,6 @@ export class Grid extends HTMLElement {
     get height(){
         return Number(this.getAttribute('height') ?? Grid.defaults.height);
     }
-
-    set radialGradient(value){
-       value ? this.setAttribute('radial-gradient', value) : this.removeAttribute('radial-gradient');
-    }
-    get radialGradient(){
-        return this.getAttribute('radial-gradient');
-    }
-
-    set followMouse(value){
-        value ? this.setAttribute('follow-mouse', '') : this.removeAttribute('follow-mouse');
-    }
-    get followMouse(){
-        return this.hasAttribute('follow-mouse');
-    }
 }
+
+export default Grid;
