@@ -1,6 +1,6 @@
 {
-    "name": "@components-1812/tabs",
-    "description": "Custom Tabs component",
+    "name": "@components-1812/basic-grid",
+    "description": "Custom Basic Grid component",
     "keywords": ["web-components", "web-components-library", "tabs", "custom-tabs"],
     "author": "Franco Javier Gadea",
     "license": "MIT",
@@ -8,13 +8,13 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/FrancoJavierGadea/Components-1812.git",
-        "directory": "src/UI/Tabs"
+        "directory": "src/SVG/BasicGrid"
     },
     "type": "module",
     "exports": {
         ".": "./src/index.js",
-        "./Tabs": "./src/Tabs.js",
-        "./Tabs.css": "./src/Tabs.css",
+        "./BasicGrid": "./src/BasicGrid.js",
+        "./BasicGrid.css": "./src/BasicGrid.css",
         "./define": "./src/define.js"
     }
 }

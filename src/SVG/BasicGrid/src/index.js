@@ -20,5 +20,5 @@ else {
     console.warn(`Custom element "${TAG_NAME}" is already defined.`);
 }
 
-export { BasicGrid, BasicGridCSS };
+export { BasicGrid, BasicGridCSS, TAG_NAME };
 export default BasicGrid;    

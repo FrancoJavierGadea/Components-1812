@@ -11,6 +11,10 @@ export class BasicGrid extends HTMLElement {
         raw: []
     };
 
+    static defaults = {
+        size: 10
+    };
+
 
     static observedAttributes = ['size'];
     
@@ -32,7 +36,6 @@ export class BasicGrid extends HTMLElement {
         this.shadowRoot.innerHTML = `
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                
                 <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
                     <rect width="10" height="10" fill="none"  />
                 </pattern>
@@ -60,10 +63,15 @@ export class BasicGrid extends HTMLElement {
         this.shadowRoot.adoptedStyleSheets = BasicGrid.stylesSheets.adopted;
     }
 
+    connectedCallback(){
+        
+        this.setAttribute('ready', '');
+    }
+
     set size(value){
-        this.setAttribute('size', value ?? 10);
+        this.setAttribute('size', value ?? BasicGrid.defaults.size);
     }
     get size(){
-        return Number(this.getAttribute('size') ?? 10);
+        return Number(this.getAttribute('size') ?? BasicGrid.defaults.size);
     }
 }
