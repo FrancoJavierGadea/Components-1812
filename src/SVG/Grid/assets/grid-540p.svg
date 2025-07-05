@@ -1,0 +1,10 @@
+<svg width="960" height="540" xmlns="http://www.w3.org/2000/svg" style="--line-color: #777; --line-width: 1; --line-opacity: 1; --line-dasharray: none;"><defs>
+            <linearGradient id="grid-linear-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--line-color)" stop-opacity="1"/>
+                <stop offset="100%" stop-color="var(--line-color)" stop-opacity="0"/>
+            </linearGradient>
+
+            <radialGradient id="grid-radial-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" href="#grid-linear-gradient" gradientUnits="userSpaceOnUse"/>
+        </defs>
+            <g class="Grid" style="--line-color: url(#grid-radial-gradient);" stroke="var(--line-color)" stroke-width="var(--line-width)" stroke-opacity="var(--line-opacity)" stroke-dasharray="var(--line-dasharray)"><g class="horizontal-lines"><path d="M 40 0 L 40 540"/><path d="M 80 0 L 80 540"/><path d="M 120 0 L 120 540"/><path d="M 160 0 L 160 540"/><path d="M 200 0 L 200 540"/><path d="M 240 0 L 240 540"/><path d="M 280 0 L 280 540"/><path d="M 320 0 L 320 540"/><path d="M 360 0 L 360 540"/><path d="M 400 0 L 400 540"/><path d="M 440 0 L 440 540"/><path d="M 480 0 L 480 540"/><path d="M 520 0 L 520 540"/><path d="M 560 0 L 560 540"/><path d="M 600 0 L 600 540"/><path d="M 640 0 L 640 540"/><path d="M 680 0 L 680 540"/><path d="M 720 0 L 720 540"/><path d="M 760 0 L 760 540"/><path d="M 800 0 L 800 540"/><path d="M 840 0 L 840 540"/><path d="M 880 0 L 880 540"/><path d="M 920 0 L 920 540"/></g><g class="vertical-lines"><path d="M 0 40 L 960 40"/><path d="M 0 80 L 960 80"/><path d="M 0 120 L 960 120"/><path d="M 0 160 L 960 160"/><path d="M 0 200 L 960 200"/><path d="M 0 240 L 960 240"/><path d="M 0 280 L 960 280"/><path d="M 0 320 L 960 320"/><path d="M 0 360 L 960 360"/><path d="M 0 400 L 960 400"/><path d="M 0 440 L 960 440"/><path d="M 0 480 L 960 480"/><path d="M 0 520 L 960 520"/></g></g>
+        </svg>

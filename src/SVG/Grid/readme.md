@@ -6,6 +6,8 @@
 
 A **web component** that generates an **SVG-based** grid of lines with optional **radial gradient** effects, ideal for creating dynamic backgrounds or overlay patterns.
 
+![Example](./assets/grid-540p.svg)
+
 ## Installation
 
 #### NPM
@@ -20,10 +22,10 @@ npm install @components-1812/grid
 
 ```html
 <script type="module">
-    import Grid from "https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.2/src/Grid.min.js";
+    import Grid from "https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.3/src/Grid.min.js";
 
     //Add the stylesheets to the component
-    Grid.stylesSheets.links.push("https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.2/src/Grid.min.css");
+    Grid.stylesSheets.links.push("https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.3/src/Grid.min.css");
 
     console.log(Grid);
 
@@ -33,12 +35,12 @@ npm install @components-1812/grid
 ```
 
 - **jsdelivr**: [`Grid package`](https://www.jsdelivr.com/package/npm/@components-1812/grid)
-[`Grid.js`](https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.2/src/Grid.min.js)
-[`Grid.css`](https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.2/src/Grid.min.css)
+[`Grid.js`](https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.3/src/Grid.min.js)
+[`Grid.css`](https://cdn.jsdelivr.net/npm/@components-1812/grid@0.0.3/src/Grid.min.css)
 
-- **unpkg**: [`Grid package`](https://app.unpkg.com/@components-1812/grid@0.0.2)
-[`Grid.js`](https://unpkg.com/@components-1812/grid@0.0.2/src/Grid.js)
-[`Grid.css`](https://unpkg.com/@components-1812/grid@0.0.2/src/Grid.css)
+- **unpkg**: [`Grid package`](https://app.unpkg.com/@components-1812/grid)
+[`Grid.js`](https://unpkg.com/@components-1812/grid@0.0.3/src/Grid.js)
+[`Grid.css`](https://unpkg.com/@components-1812/grid@0.0.3/src/Grid.css)
 
 <br>
 

@@ -31,7 +31,7 @@ export class Grid extends HTMLElement {
         this.attachShadow({mode: 'open'});
 
         this.shadowRoot.innerHTML = `
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <svg width="${this.width}" height="${this.height}" xmlns="http://www.w3.org/2000/svg">
             <g class="Grid"></g>
         </svg>
         `;
@@ -112,28 +112,31 @@ export class Grid extends HTMLElement {
     //MARK: update grid
     #updateGrid(){
 
+        this.shadowRoot.querySelector('svg').setAttribute('width', this.width);
+        this.shadowRoot.querySelector('svg').setAttribute('height', this.height);
+
         const horizontalLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         horizontalLines.classList.add('horizontal-lines');
 
         const verticalLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         verticalLines.classList.add('vertical-lines');
 
-        for(let i = 0; i < this.width; i += this.size){
+        for(let i = this.size; i < this.width; i += this.size){
 
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
             path.setAttribute('d', `M ${i} 0 L ${i} ${this.height}`);
 
-            horizontalLines.append(path);
+            verticalLines.append(path);
         }
 
-        for(let i = 0; i < this.height; i += this.size){
+        for(let i = this.size; i < this.height; i += this.size){
 
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
             path.setAttribute('d', `M 0 ${i} L ${this.width} ${i}`);
 
-            verticalLines.append(path);
+            horizontalLines.append(path);
         }
 
         this.shadowRoot.querySelector('svg .Grid').replaceChildren(horizontalLines, verticalLines);
@@ -166,6 +169,48 @@ export class Grid extends HTMLElement {
         this.shadowRoot.querySelector('svg').prepend(defs);
 
         this.shadowRoot.querySelector('svg .Grid').style.setProperty('--line-color', 'url(#grid-radial-gradient)');
+    }
+
+
+    //MARK: Download SVG
+    /**
+     * Returns the URL of the SVG to download.
+     * @returns {{url: string, clear: () => void}} An object containing the URL of the SVG and a function to clear the URL.
+     */
+    getDownloadURL(){
+
+        const SVG = this.shadowRoot.querySelector('svg').cloneNode(true);
+
+        ['--line-color', '--line-width', '--line-opacity', '--line-dasharray']
+        .forEach((property) => {
+
+            const value = getComputedStyle(this).getPropertyValue(property);
+
+            SVG.style.setProperty(property, value);
+        });
+
+        SVG.querySelector('.Grid').setAttribute('stroke', 'var(--line-color)');
+        SVG.querySelector('.Grid').setAttribute('stroke-width', 'var(--line-width)');
+        SVG.querySelector('.Grid').setAttribute('stroke-opacity', 'var(--line-opacity)');
+        SVG.querySelector('.Grid').setAttribute('stroke-dasharray', 'var(--line-dasharray)');
+
+        //Generate the url to save the SVG
+        const rawSVG = new XMLSerializer().serializeToString(SVG);
+        const blob = new Blob([rawSVG], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        return { url, clear: () => URL.revokeObjectURL(url) };
+    }
+    downloadSVG(timeout = 2500){
+
+        const {url, clear} = this.getDownloadURL();
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'grid.svg';
+        a.click();
+
+        setTimeout(() => clear(), timeout);
     }
 
 
