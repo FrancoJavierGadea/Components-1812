@@ -8,6 +8,12 @@ A **web component** that generates an **SVG-based** grid of lines with optional 
 
 ![Example](./assets/grid-540p.svg)
 
+## Examples
+
+- [CodePen](https://codepen.io/FrancoJavierGadea/pen/jEPgwWr)
+
+<br>
+
 ## Installation
 
 #### NPM
