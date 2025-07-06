@@ -89,6 +89,8 @@ If you want to add custom stylesheets to the component or need to load styleshee
     import('@components-1812/grid/define');
     ```
 
+<br>
+
 - Using a `<style>` tag inside the shadow root of the component:
 
     ```js
@@ -101,6 +103,8 @@ If you want to add custom stylesheets to the component or need to load styleshee
     //Define the component
     import('@components-1812/grid/define');
     ```
+
+<br>
 
 - Using a `<link>` tag inside the shadow root of the component:
 
@@ -115,6 +119,11 @@ If you want to add custom stylesheets to the component or need to load styleshee
     import('@components-1812/grid/define');
     ```
 
+<br>
+
+> **Note:**
+> 
+> `import('@components-1812/grid/define')` calls `customElements.define('custom-grid', Grid);` in `define.js`
 
 <br>
 
@@ -125,8 +134,8 @@ If you want to add custom stylesheets to the component or need to load styleshee
 - `--line-opacity`: The opacity of the grid lines.
 - `--line-dasharray`: The dasharray of the grid lines.
 
-
 <br>
+
 
 ## Component Attributes
 
@@ -174,8 +183,8 @@ If you want to add custom stylesheets to the component or need to load styleshee
 > To prevent FOUC (Flash of Unstyled Content), you can use the ready attributes to wait until the component is ready before displaying it:
 > 
 > ```css
-> :not([ready]), 
-> :not([ready-links]) {
+> custom-grid:not([ready]), 
+> custom-grid:not([ready-links]) {
 >     display: none;
 > }
 > ```
@@ -196,3 +205,74 @@ document.querySelector('custom-grid').addEventListener('ready-links', (e) => {
 ```
 
 - `ready`: Dispatched when the component initialization has finished, at the end of `connectedCallback`.
+
+<br>
+
+
+## Methods
+
+- `addRadialGradient()`: Adds a radial gradient effect to the grid lines.
+
+    ```js
+    const grid = document.querySelector('custom-grid')
+    
+    grid.addRadialGradient({centerX: '50%', centerY: '50%', radius: '50%'});
+    ```
+
+- `getSVGDownloadURL()`: Returns the URL of the SVG to download.
+
+    ```js
+    const grid = document.querySelector('custom-grid')
+
+    const {url, clear} = grid.getSVGDownloadURL();
+
+    //Clear the URL when you're done with it. Internally uses URL.revokeObjectURL(url);
+    clear();
+    ```
+
+- `downloadSVG()`: Downloads the SVG to the user's computer.
+
+    ```js
+    const grid = document.querySelector('custom-grid')
+
+    //Internally creates a anchor tag and shoots the download
+    //Wait the timeout berfore clearing the URL 
+    grid.downloadSVG({timeout: 2500, filename: 'grid.svg'});
+    ```
+
+<br>
+
+
+## Static properties
+
+- `Grid.defaults`: Default values for the component attributes.
+
+```js
+console.log(Grid.defaults);//{size: 10, width: 1920, height: 1080}
+```
+
+- `Grid.stylesSheets`: Stylesheets to be applied to the component in the `constructor` method.
+
+```js
+console.log(Grid.stylesSheets);//{links: [], adopted: [], raw: []}
+
+//Insert links tags in the shadow root and wait they load to shoot the ready-links event
+Grid.stylesSheets.links.push('path/to/stylesheet.css');
+
+//Insert adopted stylesheets in the shadow root: shadowRoot.adoptedStyleSheets = Grid.stylesSheets.adopted;
+Grid.stylesSheets.adopted.push(new CSSStyleSheet());
+
+//Insert style tags in the shadow root with the raw stylesheets
+Grid.stylesSheets.raw.push(`
+    :host{
+        display: block;
+    }
+`);
+```
+
+<br>
+
+
+## License
+
+MIT

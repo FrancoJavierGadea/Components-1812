@@ -22,6 +22,12 @@ export class Grid extends HTMLElement {
     
     attributeChangedCallback(name, oldValue, newValue){
 
+
+        if(['width', 'height'].includes(name)){
+
+            this.#SVGRect = null;//Reset the svg rect cache
+        }
+
         this.#updateGrid();
     }
 
@@ -31,7 +37,7 @@ export class Grid extends HTMLElement {
         this.attachShadow({mode: 'open'});
 
         this.shadowRoot.innerHTML = `
-        <svg width="${this.width}" height="${this.height}" xmlns="http://www.w3.org/2000/svg">
+        <svg width="${this.width}" height="${this.height}" viewBox="0 0 ${this.width} ${this.height}" xmlns="http://www.w3.org/2000/svg">
             <g class="Grid"></g>
         </svg>
         `;
@@ -70,6 +76,8 @@ export class Grid extends HTMLElement {
         });
 
         this.shadowRoot.adoptedStyleSheets = Grid.stylesSheets.adopted;
+
+        this.$SVG = (selector = '') => this.shadowRoot.querySelector(`svg ${selector}`);    
     }
 
     //MARK: Lifecycle callbacks
@@ -79,7 +87,7 @@ export class Grid extends HTMLElement {
 
         if(this.hasAttribute('radial-gradient')){
 
-            const [centerX, centerY, radius] = this.getAttribute('radial-gradient').split(',').map((value) => value.trim());
+            const {centerX, centerY, radius} = this.#parseRadialGradientAttr();
 
             this.addRadialGradient({centerX, centerY, radius});
 
@@ -89,11 +97,12 @@ export class Grid extends HTMLElement {
 
                     document.addEventListener('mousemove', this.#mouseMoveHandler);
                     document.addEventListener('mouseleave', this.#mouseLeaveHandler);
+                    window.addEventListener('resize', this.#resizeHandler);
                 }
                 else{
 
-                    this.addEventListener('mousemove', this.#mouseMoveHandler);
-                    this.addEventListener('mouseleave', this.#mouseLeaveHandler);
+                    this.$SVG().addEventListener('mousemove', this.#mouseMoveHandler);
+                    this.$SVG().addEventListener('mouseleave', this.#mouseLeaveHandler);
                 }
             }
         }
@@ -112,8 +121,9 @@ export class Grid extends HTMLElement {
     //MARK: update grid
     #updateGrid(){
 
-        this.shadowRoot.querySelector('svg').setAttribute('width', this.width);
-        this.shadowRoot.querySelector('svg').setAttribute('height', this.height);
+        this.$SVG().setAttribute('width', this.width);
+        this.$SVG().setAttribute('height', this.height);
+        this.$SVG().setAttribute('viewBox', `0 0 ${this.width} ${this.height}`);
 
         const horizontalLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         horizontalLines.classList.add('horizontal-lines');
@@ -139,7 +149,7 @@ export class Grid extends HTMLElement {
             horizontalLines.append(path);
         }
 
-        this.shadowRoot.querySelector('svg .Grid').replaceChildren(horizontalLines, verticalLines);
+        this.$SVG('.Grid').replaceChildren(horizontalLines, verticalLines);
     }
 
     //MARK: add radial gradient
@@ -166,9 +176,17 @@ export class Grid extends HTMLElement {
             />
         `;
 
-        this.shadowRoot.querySelector('svg').prepend(defs);
+        this.$SVG().prepend(defs);
 
-        this.shadowRoot.querySelector('svg .Grid').style.setProperty('--line-color', 'url(#grid-radial-gradient)');
+        this.$SVG('.Grid').style.setProperty('--line-color', 'url(#grid-radial-gradient)');
+    }
+    #parseRadialGradientAttr(){
+
+        const radialGradientAttr = this.getAttribute('radial-gradient') ?? '50%, 50%, 50%';
+
+        const [centerX, centerY, radius] = radialGradientAttr.split(',').map((value) => value.trim());
+
+        return {centerX, centerY, radius};
     }
 
 
@@ -177,22 +195,25 @@ export class Grid extends HTMLElement {
      * Returns the URL of the SVG to download.
      * @returns {{url: string, clear: () => void}} An object containing the URL of the SVG and a function to clear the URL.
      */
-    getDownloadURL(){
+    getSVGDownloadURL(){
 
-        const SVG = this.shadowRoot.querySelector('svg').cloneNode(true);
+        const SVG = this.$SVG().cloneNode(true);
 
-        ['--line-color', '--line-width', '--line-opacity', '--line-dasharray']
-        .forEach((property) => {
+        const styles = getComputedStyle(this);
 
-            const value = getComputedStyle(this).getPropertyValue(property);
+        Object.entries({
+            'stroke': '--line-color', 
+            'stroke-width': '--line-width', 
+            'stroke-opacity': '--line-opacity', 
+            'stroke-dasharray': '--line-dasharray'
+        })
+        .forEach(([attribute, property]) => {
+
+            const value = styles.getPropertyValue(property);
 
             SVG.style.setProperty(property, value);
+            SVG.querySelector('.Grid').setAttribute(attribute, `var(${property})`);
         });
-
-        SVG.querySelector('.Grid').setAttribute('stroke', 'var(--line-color)');
-        SVG.querySelector('.Grid').setAttribute('stroke-width', 'var(--line-width)');
-        SVG.querySelector('.Grid').setAttribute('stroke-opacity', 'var(--line-opacity)');
-        SVG.querySelector('.Grid').setAttribute('stroke-dasharray', 'var(--line-dasharray)');
 
         //Generate the url to save the SVG
         const rawSVG = new XMLSerializer().serializeToString(SVG);
@@ -201,13 +222,21 @@ export class Grid extends HTMLElement {
 
         return { url, clear: () => URL.revokeObjectURL(url) };
     }
-    downloadSVG(timeout = 2500){
+    /**
+     * Downloads the SVG.
+     * @param {{timeout: number, filename: string}} options
+     * @param {number} options.timeout - The timeout to wait before revoking the URL.
+     * @param {string} options.filename - The filename for the download.
+     */
+    downloadSVG(options = {}){
 
-        const {url, clear} = this.getDownloadURL();
+        const {timeout = 2500, filename = 'grid.svg'} = options;
+
+        const {url, clear} = this.getSVGDownloadURL();
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'grid.svg';
+        a.download = filename;
         a.click();
 
         setTimeout(() => clear(), timeout);
@@ -215,32 +244,44 @@ export class Grid extends HTMLElement {
 
 
     //MARK: Handler events
+    #SVGRect = null;//Cache the svg position to calculate the mouse position relative to the svg in global move
+
     #mouseMoveHandler = (e) => {
 
-        const x = this.getAttribute('follow-mouse') === 'global' ? e.clientX : e.offsetX;
-        const y = this.getAttribute('follow-mouse') === 'global' ? e.clientY : e.offsetY;
+        this.#SVGRect ??= this.$SVG().getBoundingClientRect();
 
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cx', x);
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cy', y);
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('fx', x);
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('fy', y);
+        const {top, left} = this.#SVGRect;
+        const isGlobal = this.getAttribute('follow-mouse') === 'global';
+
+        let x = isGlobal ? e.clientX - left : e.offsetX;
+        let y = isGlobal ? e.clientY - top : e.offsetY;
+
+        this.$SVG('#grid-radial-gradient').setAttribute('cx', x);
+        this.$SVG('#grid-radial-gradient').setAttribute('cy', y);
+        this.$SVG('#grid-radial-gradient').setAttribute('fx', x);
+        this.$SVG('#grid-radial-gradient').setAttribute('fy', y);
     }
     #mouseLeaveHandler = () => {
 
-        const [centerX, centerY, radius] = this.getAttribute('radial-gradient').split(',').map((value) => value.trim());
+        const {centerX, centerY} = this.#parseRadialGradientAttr();
 
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cx', centerX);
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('cy', centerY);
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('fx', centerX);
-        this.shadowRoot.querySelector('svg #grid-radial-gradient').setAttribute('fy', centerY);
+        this.$SVG('#grid-radial-gradient').setAttribute('cx', centerX);
+        this.$SVG('#grid-radial-gradient').setAttribute('cy', centerY);
+        this.$SVG('#grid-radial-gradient').setAttribute('fx', centerX);
+        this.$SVG('#grid-radial-gradient').setAttribute('fy', centerY);
+    }
+    #resizeHandler = () => {
+
+        this.#SVGRect = null;
     }
 
     #clearListeners(){
         
         document.removeEventListener('mousemove', this.#mouseMoveHandler);
         document.removeEventListener('mouseleave', this.#mouseLeaveHandler);
-        this.removeEventListener('mousemove', this.#mouseMoveHandler);
-        this.removeEventListener('mouseleave', this.#mouseLeaveHandler);
+        this.$SVG().removeEventListener('mousemove', this.#mouseMoveHandler);
+        this.$SVG().removeEventListener('mouseleave', this.#mouseLeaveHandler);
+        window.removeEventListener('resize', this.#resizeHandler);
     }
 
     //MARK: Getters and Setters
