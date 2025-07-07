@@ -64,9 +64,13 @@ import '@components-1812/grid';
 and use it in your HTML:
 
 ```html
-<custom-grid></custom-grid>
-
 <custom-grid size="20"></custom-grid>
+
+<custom-grid size="30" radial-gradient="50%, 50%, 50%" follow-mouse="global"></custom-grid>
+
+<custom-grid width="960" height="540" size="20" 
+    radial-gradient="65%, 40%, 15%" follow-mouse
+></custom-grid>
 ```
 
 > **Note:**

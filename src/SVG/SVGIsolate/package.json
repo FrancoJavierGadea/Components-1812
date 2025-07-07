@@ -27,7 +27,7 @@
         "src/SVGIsolate.js",
         "src/SVGIsolate.css",
         "src/define.js",
-        "src/assets/svg-isolate.svg"
+        "src/assets/preview.webp"
     ],
     "main": "./src/SVGIsolate.js",
     "style": "./src/SVGIsolate.css"

@@ -78,10 +78,14 @@
 
     <script type="module">
 
-        import SVGIsolate from '../src/SVGIsolate.js';
+        import SVGIsolate from "https://cdn.jsdelivr.net/npm/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.min.js";
+
+        //Add the stylesheets to the component
+        SVGIsolate.stylesSheets.links.push("https://cdn.jsdelivr.net/npm/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.min.css");
 
         console.log(SVGIsolate);
 
+        //Define the component
         customElements.define('custom-svg-isolate', SVGIsolate);
     </script>
 </body>

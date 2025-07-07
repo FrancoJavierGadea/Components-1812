@@ -26,55 +26,77 @@
             color: #fff;
             letter-spacing: 2px;
         }
+        button {
+            display: block;
+            padding: 10px 20px;
+            font-family: sans-serif;
+            font-size: 14pt;
+            color: #fff;
+            background-color: #666565;
+            border: none;
+            cursor: pointer;
+            margin: auto;
+        }
     </style>
 </head>
 <body>
-    
-    <h2>In light DOM with conflicts ID for clipPath</h2>
-
-    <section>
-
-        <!-- Circle -->
-        <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clipPath"><circle cx="100" cy="100" r="50" /></clipPath></defs><rect x="0" y="0" width="200" height="200" fill="red" stroke="none" clip-path="url(#clipPath)" /></svg>
-        
-        <!-- Triangle -->
-        <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clipPath"><polygon points="100,50 150,150 50,150"/></clipPath></defs><rect x="0" y="0" width="200" height="200" fill="red" stroke="none" clip-path="url(#clipPath)" /></svg>
-    
-        <!-- Hexagon -->
-        <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clipPath"><polygon points="100,50 150,75 150,125 100,150 50,125 50,75" /></clipPath></defs><rect x="0" y="0" width="200" height="200" fill="red" stroke="none" clip-path="url(#clipPath)" /></svg>
-        
-        <!-- Heart -->
-        <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="clipPath"><path d="M100 170 L30 90 A35 35 0 1 1 100 60 A35 35 0 1 1 170 90 Z"/></clipPath></defs><rect x="0" y="0" width="200" height="200" fill="red" stroke="none" clip-path="url(#clipPath)" /></svg>
-
-    </section>
-
-
-    <h2>In shadow DOM using custom-svg-isolate wrapper</h2>
 
     <section>
 
         
         <!-- Circle -->
-        <custom-svg-isolate src=""></custom-svg-isolate>
+        <custom-svg-isolate src="https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/circle.svg"></custom-svg-isolate>
 
         <!-- Triangle -->
-        <custom-svg-isolate src=""></custom-svg-isolate>
+        <custom-svg-isolate src="https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/triangle.svg"></custom-svg-isolate>
 
         <!-- Hexagon -->
-        <custom-svg-isolate src=""></custom-svg-isolate>
+        <custom-svg-isolate src="https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/hexagon.svg"></custom-svg-isolate>
 
         <!-- Heart -->
-        <custom-svg-isolate src=""></custom-svg-isolate>
+        <custom-svg-isolate src="https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/heart.svg"></custom-svg-isolate>
 
     </section>
+
+    <section>
+
+        <custom-svg-isolate src="https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/circle.svg" id="dynamic-svg"></custom-svg-isolate>
+
+    </section>
+
+    <button id="load-svg-btn">Load SVG</button>
 
     <script type="module">
 
-        import SVGIsolate from '../src/SVGIsolate.js';
+        import SVGIsolate from "https://unpkg.com/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.js";
+
+        //Add the stylesheets to the component
+        SVGIsolate.stylesSheets.links.push("https://unpkg.com/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.css");
 
         console.log(SVGIsolate);
 
+        //Define the component
         customElements.define('custom-svg-isolate', SVGIsolate);
+    
+        //Change SVG button
+        const loadSVGBtn = document.getElementById('load-svg-btn');
+
+        const svgPaths = [
+            'https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/circle.svg',
+            'https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/triangle.svg',
+            'https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/hexagon.svg',
+            'https://raw.githubusercontent.com/FrancoJavierGadea/Components-1812/refs/heads/main/src/SVG/SVGIsolate/assets/heart.svg'
+        ];
+        let i = 1;
+
+        loadSVGBtn.addEventListener('click', () => {
+
+            const svgIsolate = document.getElementById('dynamic-svg');
+
+            svgIsolate.loadSVG(svgPaths[i]);
+
+            i = (i + 1) % svgPaths.length;
+        });
     </script>
 </body>
 </html>
