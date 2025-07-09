@@ -1,0 +1,37 @@
+{
+    "name": "@components-1812/json-visualizer",
+    "description": "Custom Grid element with radial gradient effect",
+    "keywords": ["web-components", "web-components-library", "grid", "grid-effect", "svg", "svg-grid", "custom-grid"],
+    "author": "Franco Javier Gadea",
+    "license": "MIT",
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FrancoJavierGadea/Components-1812.git",
+        "directory": "src/SVG/Grid"
+    },
+    "type": "module",
+    "scripts": {
+        "test": "node --test"
+    },
+    "exports": {
+        ".": "./src/index.js",
+        "./index": "./src/index.js",
+        "./index.js": "./src/index.js",
+        "./Grid": "./src/Grid.js",
+        "./Grid.js": "./src/Grid.js",
+        "./Grid.css": "./src/Grid.css",
+        "./define": "./src/define.js",
+        "./define.js": "./src/define.js",
+        "./assets/*": "./src/assets/*"
+    },
+    "files": [
+        "src/index.js",
+        "src/Grid.js",
+        "src/Grid.css",
+        "src/define.js",
+        "src/assets/grid.svg"
+    ],
+    "main": "./src/Grid.js",
+    "style": "./src/Grid.css"
+}
