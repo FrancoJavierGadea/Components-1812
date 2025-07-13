@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONVisualizer example 1</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+        }
+        body {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 50px;
+        }
+
+        section {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            border: 1px solid rgb(141, 11, 11);
+            overflow: hidden;
+            resize: both;
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <custom-json-visualizer json='{"name": "John Doe", "age": null}'></custom-json-visualizer>
+    </section>
+
+    <section>
+        <custom-json-visualizer line-numbers="none">
+            {
+                "age": 30,
+                "isStudent": false,
+                "courses": ["Math", "Science"],
+                "address": {
+                    "street": "123 Main St",
+                    "city": "Anytown"
+                }
+            }
+        </custom-json-visualizer>
+    </section>
+
+
+    <section>
+        <custom-json-visualizer>
+            {
+                "name": "John Doe",
+                "age": 30,
+                "isStudent": false,
+                "courses": ["Math", "Science"],
+                "address": {
+                    "street": "123 Main St",
+                    "city": "Anytown"
+                },
+                "grades": [ 85, 92, 78 ]
+            }
+        </custom-json-visualizer>
+    </section>
+
+    <section>
+        <custom-json-visualizer src="https://jsonplaceholder.typicode.com/todos/1"></custom-json-visualizer></custom-json-visualizer>
+    </section>
+
+    <section>
+        <custom-json-visualizer src="https://jsonplaceholder.typicode.com/todos/2"></custom-json-visualizer></custom-json-visualizer></custom-json-visualizer>
+    </section>
+
+    <script type="module">
+        import JSONVisualizer from '../src/JSONVisualizer.js';
+        import JSONTokenizer from '../src/JSONTokenizer.js';
+
+        //Load the stylesheet
+        JSONVisualizer.stylesSheets.links.push('../src/JSONVisualizer.css');
+
+        //Define JSON Tokenizer
+        JSONVisualizer.getTokens = (rawJson) => {
+
+            const tokenizer = new JSONTokenizer(); 
+
+            tokenizer.tokenize(rawJson);
+
+            return tokenizer.tokens;
+        }
+
+        console.log(JSONVisualizer);
+
+        customElements.define('custom-json-visualizer', JSONVisualizer);
+    </script>
+</body>
+</html>

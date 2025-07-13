@@ -1,0 +1,86 @@
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    
+    --line-height: 1.25;
+    --font: Consolas, "Courier New", monospace, sans-serif;
+
+    --numbers-padding: 5px;
+    --numbers-color: #777;
+    --numbers-background: transparent;
+    --numbers-text-align: right;
+    
+    --json-tab-size: 20px;
+
+    /* Theme Colors */
+    --json-background: #222;
+    --json-foreground: #eee;
+
+    --json-key: #9cdcfe;           
+    --json-string: #ce9178;        
+    --json-number: #b5cea8;        
+    --json-boolean: #569cd6;       
+    --json-null: #dcdcaa;  
+
+    --json-brace: #d4d4d4;         
+    --json-bracket: #d4d4d4;       
+    --json-comma: #d4d4d4;         
+    --json-colon: #d4d4d4; 
+    
+    background-color: var(--json-background);
+    color: var(--json-foreground);
+    font-family: var(--font);
+    line-height: var(--line-height);
+}
+:host .JSONVisualizer {
+
+    display: flex;
+    gap: 5px;
+
+    .line-numbers {
+        flex-grow: 0;
+        flex-shrink: 0;
+        padding-inline: var(--numbers-padding);
+        color: var(--numbers-color);
+        background-color: var(--numbers-background);
+        text-align: var(--numbers-text-align);
+        user-select: none;
+    }
+
+    .line {
+        padding-left: calc(var(--level, 0) * var(--tab-size, 20px));
+        white-space: nowrap;
+    }
+
+    span[tags~="brace"]{
+        color: var(--json-brace);
+    }
+    span[tags~="bracket"]{
+        color: var(--json-bracket);
+    }
+    span[tags~="string"]{
+        color: var(--json-string);
+    }
+    span[tags~="key"]{
+        color: var(--json-key);
+    }
+    span[tags~="number"]{
+        color: var(--json-number);
+    }
+    span[tags~="boolean"]{
+        color: var(--json-boolean);
+    }
+    span[tags~="null"]{
+        color: var(--json-null);
+    }
+    span[tags~="comma"]{
+        color: var(--json-comma);
+    }
+    span[tags~="colon"]{
+        color: var(--json-colon);
+        padding-right: 1ch;
+    }
+    
+}

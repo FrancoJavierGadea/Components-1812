@@ -17,6 +17,7 @@ export class SVGIsolate extends HTMLElement {
 
         this.attachShadow({ mode: 'open' });
 
+        //Styles management
         Promise.allSettled(
             SVGIsolate.stylesSheets.links.map((styleSheet) => {
 
