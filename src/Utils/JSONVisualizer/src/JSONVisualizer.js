@@ -114,6 +114,7 @@ export class JSONVisualizer extends HTMLElement {
 
 		let currentLine = null;
 		let level = 0;
+		let lineNumber = 1;
 
     	for (let i = 0; i < tokens.length; i++) {
       		const { type, value, tags } = tokens.at(i);
@@ -128,12 +129,12 @@ export class JSONVisualizer extends HTMLElement {
 
 			// Crear línea si no existe
 			if (!currentLine) {
-				currentLine = this.#createLine({ level });
+				currentLine = this.#createLine({ level, number: lineNumber++ });
 				JSONContent.append(currentLine);
 			}
 
 			// Crear span del token
-			currentLine.append(this.#createSpan({ type, value, tags }));
+			currentLine.querySelector(".line-content").append(this.#createSpan({ type, value, tags }));
 
 			if (["brace-close", "bracket-close"].includes(type)) {
 				const nextToken = tokens.at(i + 1);
@@ -142,7 +143,7 @@ export class JSONVisualizer extends HTMLElement {
 					const { type, value, tags } = nextToken;
 
 					// Agregar la coma en la misma línea
-					currentLine.append(this.#createSpan({ type, value, tags }));
+					currentLine.querySelector(".line-content").append(this.#createSpan({ type, value, tags }));
 
 					// Saltar el token de coma
 					i++;
@@ -160,14 +161,7 @@ export class JSONVisualizer extends HTMLElement {
       		if (["brace-open", "bracket-open"].includes(type)) level++;
     	}
 
-		const fragment = document.createDocumentFragment();
-		fragment.append(JSONContent);
-
-		if(this.lineNumbers !== "none") fragment.prepend(
-			this.#createLineNumbers({ total: JSONContent.children.length })
-		);
-
-    	this.shadowRoot.querySelector(".JSONVisualizer").replaceChildren(fragment);
+    	this.shadowRoot.querySelector(".JSONVisualizer").replaceChildren(JSONContent);
   	}
 	#createSpan({ type, value, tags = [] } = {}) {
 
@@ -178,29 +172,28 @@ export class JSONVisualizer extends HTMLElement {
 
 		return span;
 	}
-	#createLine({ level } = {}) {
+	#createLine({ level, number = 0 } = {}) {
 
 		const line = document.createElement("div");
 		line.classList.add("line");
 		line.setAttribute("level", level);
 		line.style.setProperty("--level", level);
 
-		return line;
-	}
-	#createLineNumbers({ total = 10 } = {}) {
+		if(this.lineNumbers !== 'none'){
 
-		const lineNumbers = document.createElement("div");
-		lineNumbers.classList.add("line-numbers");
-
-		for (let i = 1; i <= total; i++) {
 			const lineNumber = document.createElement("div");
 			lineNumber.classList.add("line-number");
-			lineNumber.textContent = i;
+			lineNumber.textContent = number;
 
-			lineNumbers.append(lineNumber);
-		}
+			line.append(lineNumber);
+		};
 
-		return lineNumbers;
+		const content = document.createElement("div");
+		content.classList.add("line-content");
+
+		line.append(content);
+
+		return line;
 	}
 
 	//MARK: Getters and Setters

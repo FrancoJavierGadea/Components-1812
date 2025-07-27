@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+
+<html data-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+
+        <style>
+
+            
+
+            [data-theme='light'] {
+                --background-color: #fff;
+                --text-color: #222;
+            }
+            [data-theme='dark'] {
+                --background-color: #111;
+                --text-color: #fff;
+            }
+
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: var(--background-color);
+                color: var(--text-color);
+            }
+    
+            ::view-transition-old(root) {
+                animation: reveal 2s ease;
+                z-index: 10;
+            }
+            ::view-transition-new(root) {
+                z-index: 5;
+            }
+
+            @keyframes reveal {
+                from { 
+                    scale: 1;
+                }
+                to { 
+                    scale: 0.5;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        
+        <custom-theme-switch></custom-theme-switch>
+
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque maiores dolor eveniet fuga repudiandae nihil, consequuntur libero distinctio quibusdam officiis omnis iusto ea error provident vel. Eius repellat possimus modi.</p>
+
+        <script type="module">
+            import ThemeSwtich from "../src/ThemeSwitch.js";
+
+            ThemeSwtich.stylesSheets.links.push('../src/ThemeSwitch.css');
+
+            customElements.define("custom-theme-switch", ThemeSwtich);
+        </script>
+    </body>
+</html>

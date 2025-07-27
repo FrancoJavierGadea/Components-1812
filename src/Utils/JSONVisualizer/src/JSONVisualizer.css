@@ -36,22 +36,23 @@
 }
 :host .JSONVisualizer {
 
-    display: flex;
-    gap: 5px;
-
-    .line-numbers {
-        flex-grow: 0;
-        flex-shrink: 0;
-        padding-inline: var(--numbers-padding);
-        color: var(--numbers-color);
-        background-color: var(--numbers-background);
-        text-align: var(--numbers-text-align);
-        user-select: none;
-    }
-
     .line {
-        padding-left: calc(var(--level, 0) * var(--tab-size, 20px));
-        white-space: nowrap;
+        display: flex;
+
+        .line-number {
+            flex-grow: 0;
+            flex-shrink: 0;
+            padding-inline: var(--numbers-padding);
+            color: var(--numbers-color);
+            background-color: var(--numbers-background);
+            text-align: var(--numbers-text-align);
+            user-select: none;
+        }
+
+        .line-content {
+
+            padding-left: calc(var(--level, 0) * var(--tab-size, 20px));
+        }
     }
 
     span[tags~="brace"]{
