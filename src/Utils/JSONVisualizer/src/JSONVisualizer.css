@@ -11,6 +11,11 @@
     --numbers-color: #777;
     --numbers-background: transparent;
     --numbers-text-align: right;
+    --numbers-width: 2ch;
+
+    --toggle-btn-width: 25px;
+    --toggle-btn-color: #777;
+    --toggle-btn-padding: 0px 5px;
     
     --json-tab-size: 20px;
 
@@ -40,6 +45,7 @@
         display: flex;
 
         .line-number {
+            width: var(--numbers-width);
             flex-grow: 0;
             flex-shrink: 0;
             padding-inline: var(--numbers-padding);
@@ -49,10 +55,34 @@
             user-select: none;
         }
 
-        .line-content {
+        .line-toggle-btn {
+            display: block;
+            flex-grow: 0;
+            flex-shrink: 0;
+            width: var(--toggle-btn-width);
+            margin: 0;
+            padding: var(--toggle-btn-padding);
+            background: transparent;
+            border: none;
+            color: var(--toggle-btn-color);
 
+            .toggle-icon, .toggle-icon svg {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+            &.active .toggle-icon {
+                rotate: -90deg;
+            }
+        }
+
+        .line-content {
+            flex-grow: 1;
+            flex-shrink: 1;
             padding-left: calc(var(--level, 0) * var(--tab-size, 20px));
         }
+
+        
     }
 
     span[tags~="brace"]{
@@ -82,6 +112,12 @@
     span[tags~="colon"]{
         color: var(--json-colon);
         padding-right: 1ch;
+    } 
+}
+
+:host(:not([toggle-lines="none"])){
+
+    .line:not(:has(.line-toggle-btn)) .line-content {
+        margin-left: var(--toggle-btn-width);
     }
-    
 }

@@ -10,12 +10,21 @@ export class JSONVisualizer extends HTMLElement {
 
  	static getTokens = null;
 
+	lines = [];
+
 	constructor() {
 		super();
 
 		this.attachShadow({ mode: "open" });
 		this.shadowRoot.innerHTML = `
 			<div class="JSONVisualizer"></div>
+			<slot name="toggle-icon">
+				<template>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+					</svg>
+				</template>
+			</slot>
 		`;
 
 		//MARK: Styles managment
@@ -64,14 +73,19 @@ export class JSONVisualizer extends HTMLElement {
 
 			if(!this.json){
 				this.json = this.textContent;
-				this.textContent = "";
 			}
 
 			this.loadJSON({rawJSON: this.json});
 		}
 	}
 
-  	disconnectedCallback(){}
+  	disconnectedCallback(){
+
+		for(let i = 0; i < this.lines.length; i++){
+
+			this.lines.at(i).clearListeners?.();
+		}
+	}
 
   	//MARK: loadJSON
 	async loadJSON({src, rawJSON} = {}){
@@ -107,6 +121,8 @@ export class JSONVisualizer extends HTMLElement {
 			return;
 		}
 
+		this.lines = [];
+
     	const tokens = await JSONVisualizer.getTokens(rawJSON);
 
     	const JSONContent = document.createElement("div");
@@ -117,33 +133,44 @@ export class JSONVisualizer extends HTMLElement {
 		let lineNumber = 1;
 
     	for (let i = 0; i < tokens.length; i++) {
+
       		const { type, value, tags } = tokens.at(i);
 
       		// Decide if se debe crear una nueva línea ANTES
 			if(["brace-close", "bracket-close"].includes(type)) {
-				if ( !["brace-open", "bracket-open", "comma"].includes(tokens.at(i - 1)?.type) ) {
+
+				const previousToken = tokens.at(i - 1);
+
+				if ( !["brace-open", "bracket-open", "comma"].includes(previousToken?.type) ) {
+
 					currentLine = null;
 				}
 			}
 			if(["brace-close", "bracket-close"].includes(type)) level--;
 
 			// Crear línea si no existe
-			if (!currentLine) {
+			if(!currentLine) {
 				currentLine = this.#createLine({ level, number: lineNumber++ });
-				JSONContent.append(currentLine);
+				this.lines.push(currentLine);
+
+				if(this.lineNumbers !== 'none') currentLine.addLineNumber();
+
+				JSONContent.append(currentLine.node);
 			}
 
 			// Crear span del token
-			currentLine.querySelector(".line-content").append(this.#createSpan({ type, value, tags }));
+			currentLine.append( this.#createSpan({ type, value, tags }) );
 
 			if (["brace-close", "bracket-close"].includes(type)) {
+
 				const nextToken = tokens.at(i + 1);
 
 				if (nextToken?.type === "comma") {
+
 					const { type, value, tags } = nextToken;
 
 					// Agregar la coma en la misma línea
-					currentLine.querySelector(".line-content").append(this.#createSpan({ type, value, tags }));
+					currentLine.append( this.#createSpan({ type, value, tags }) );
 
 					// Saltar el token de coma
 					i++;
@@ -154,14 +181,16 @@ export class JSONVisualizer extends HTMLElement {
       		}
 
 			// Decide si se debe crear nueva línea DESPUÉS
-			if (["brace-open","brace-close","bracket-open","bracket-close","comma"].includes(type)) {
-				currentLine = null;
-			}
+			if(["brace-open", "bracket-open"].includes(type)){
+				level++;
+				if(this.toggleLines !== 'none') currentLine.addToggleControl(this.#toggleLines);
+			};
 
-      		if (["brace-open", "bracket-open"].includes(type)) level++;
+			if(["brace-open","brace-close","bracket-open","bracket-close","comma"].includes(type)) currentLine = null;
     	}
 
     	this.shadowRoot.querySelector(".JSONVisualizer").replaceChildren(JSONContent);
+		this.shadowRoot.querySelector(".JSONVisualizer").style.setProperty("--numbers-width", `${String(this.lines.length).length}ch`);
   	}
 	#createSpan({ type, value, tags = [] } = {}) {
 
@@ -172,6 +201,7 @@ export class JSONVisualizer extends HTMLElement {
 
 		return span;
 	}
+	//MARK: Create Line
 	#createLine({ level, number = 0 } = {}) {
 
 		const line = document.createElement("div");
@@ -179,23 +209,103 @@ export class JSONVisualizer extends HTMLElement {
 		line.setAttribute("level", level);
 		line.style.setProperty("--level", level);
 
-		if(this.lineNumbers !== 'none'){
+		line.setAttribute("number", number);
+		line.style.setProperty("--number", number);
 
-			const lineNumber = document.createElement("div");
+		const createToggleButton = () => {
+
+			const btn = document.createElement("button");
+			btn.classList.add("line-toggle-btn");
+
+			const iconContainer = document.createElement("div");
+			iconContainer.classList.add("toggle-icon");
+
+			const slot = this.shadowRoot.querySelector('slot[name="toggle-icon"');
+
+			const iconTemplate = slot.assignedNodes().at(0) ?? slot.querySelector("template");
+			
+			const icon = iconTemplate.content.cloneNode(true);
+
+			iconContainer.append(icon);
+			btn.append(iconContainer);
+			
+			return btn;
+		}
+		const createLineNumber = (number) => {
+
+			const lineNumber = document.createElement("span");
 			lineNumber.classList.add("line-number");
 			lineNumber.textContent = number;
 
-			line.append(lineNumber);
-		};
+			return lineNumber;
+		}
 
 		const content = document.createElement("div");
 		content.classList.add("line-content");
 
 		line.append(content);
 
-		return line;
+		return {
+			node: line,
+			content,
+			number,
+			level,
+			append(...nodes){
+				this.content.append(...nodes);
+			},
+			addToggleControl(callback = () => {}){
+
+				const btn = createToggleButton();
+
+				const handleToggle = (e) => {
+
+					callback(this);
+
+					btn.classList.toggle("active");
+				}; 
+
+				btn.addEventListener("click", handleToggle);
+
+				this.clearListeners = () => {
+					btn.removeEventListener("click", handleToggle);
+				}
+
+				this.node.insertBefore(btn, this.content);
+			},
+			addLineNumber(){
+				this.node.prepend( createLineNumber(this.number) );
+			}
+		};
 	}
 
+	//MARK:
+	#toggleLines = (e) => {
+
+		const {number, level} = e;
+
+		for(let i = number; i < this.lines.length; i++){
+
+			const line = this.lines.at(i);
+
+			if(line.level > level){
+
+				if(line.hideBy){
+
+					if(line.hideBy === number){
+						delete line.hideBy;
+						line.node.style.display = "";
+					}
+				}
+				else {
+					line.hideBy = number;
+					line.node.style.display = "none";
+				}
+			}
+			else break;
+		}
+	}
+
+	
 	//MARK: Getters and Setters
 	set json(value) {
 		if(value) {
@@ -217,6 +327,13 @@ export class JSONVisualizer extends HTMLElement {
 	}
 	get lineNumbers() {
 		return this.getAttribute("line-numbers");
+	}
+
+	set toggleLines(value) {
+		value ? this.setAttribute("toggle-lines", "") : this.removeAttribute("toggle-lines");
+	}
+	get toggleLines() {
+		return this.getAttribute("toggle-lines");
 	}
 
 	set src(value){
