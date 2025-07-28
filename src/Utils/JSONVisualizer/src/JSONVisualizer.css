@@ -4,6 +4,7 @@
     height: 100%;
     position: relative;
     
+    --tab-size: 20px;
     --line-height: 1.25;
     --font: Consolas, "Courier New", monospace, sans-serif;
 
@@ -15,7 +16,17 @@
 
     --toggle-btn-width: 25px;
     --toggle-btn-color: #777;
+    --toggle-btn-hover-color: #fff;
     --toggle-btn-padding: 0px 5px;
+
+    --copy-btn-width: 40px;
+    --copy-btn-height: 40px;
+    --copy-btn-color: #777;
+    --copy-btn-hover-color: #fff;
+    --copy-btn-padding: 10px;
+
+    --indentation-guides-lines-color: #444;
+    --indentation-guides-lines-width: 1px;
     
     --json-tab-size: 20px;
 
@@ -29,8 +40,8 @@
     --json-boolean: #569cd6;       
     --json-null: #dcdcaa;  
 
-    --json-brace: #d4d4d4;         
-    --json-bracket: #d4d4d4;       
+    --json-brace: #ffd700;         
+    --json-bracket: #ffd700;       
     --json-comma: #d4d4d4;         
     --json-colon: #d4d4d4; 
     
@@ -74,15 +85,37 @@
             &.active .toggle-icon {
                 rotate: -90deg;
             }
+
+            &:hover {
+                color: var(--toggle-btn-hover-color);
+            }
         }
 
         .line-content {
             flex-grow: 1;
             flex-shrink: 1;
-            padding-left: calc(var(--level, 0) * var(--tab-size, 20px));
+
+            --total-tab-size: calc(var(--level, 0) * var(--tab-size, 20px));
+
+            padding-left: var(--total-tab-size);
+
+            background-image: repeating-linear-gradient(
+                to right,
+                var(--indentation-guides-lines-color) 0,
+                var(--indentation-guides-lines-color) var(--indentation-guides-lines-width),
+                transparent var(--indentation-guides-lines-width),
+                transparent var(--tab-size, 20px)
+            );
+            
+            /* limitar la cantidad de líneas con tamaño y posición */
+            background-size: var(--total-tab-size) 100%;
+            background-repeat: no-repeat;
+            background-position: 0 0;
         }
 
-        
+        &:not(:has(.line-toggle-btn)) .line-content {
+            margin-left: var(--toggle-btn-width);
+        }
     }
 
     span[tags~="brace"]{
@@ -114,10 +147,35 @@
         padding-right: 1ch;
     } 
 }
+:host([toggle-lines="none"]) .JSONVisualizer .line .line-content {
 
-:host(:not([toggle-lines="none"])){
+    margin-left: 0;
+}
+:host([indentation-guides-lines="none"]) .JSONVisualizer .line .line-content {
 
-    .line:not(:has(.line-toggle-btn)) .line-content {
-        margin-left: var(--toggle-btn-width);
+    background-image: none;
+}
+
+
+:host .copy-btn {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    border: none;
+    padding: var(--copy-btn-padding);
+    width: var(--copy-btn-width);
+    height: var(--copy-btn-height);
+    color: var(--copy-btn-color);
+
+    .copy-icon, .copy-icon svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    &:hover {
+        color: var(--copy-btn-hover-color);
     }
 }

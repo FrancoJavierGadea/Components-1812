@@ -25,6 +25,14 @@ export class JSONVisualizer extends HTMLElement {
 					</svg>
 				</template>
 			</slot>
+			<slot name="copy-icon">
+				<template>
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+						<path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+						<path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+					</svg>
+				<template>
+			</slot>
 		`;
 
 		//MARK: Styles managment
@@ -65,6 +73,8 @@ export class JSONVisualizer extends HTMLElement {
 	//MARK: callback lifecycle
 	connectedCallback() {
 
+		this.#renderCopyButton();
+
 		if(this.src){
 
 			this.loadJSON({src: this.src});
@@ -75,7 +85,7 @@ export class JSONVisualizer extends HTMLElement {
 				this.json = this.textContent;
 			}
 
-			this.loadJSON({rawJSON: this.json});
+			this.loadJSON({raw: this.json});
 		}
 	}
 
@@ -88,7 +98,7 @@ export class JSONVisualizer extends HTMLElement {
 	}
 
   	//MARK: loadJSON
-	async loadJSON({src, rawJSON} = {}){
+	async loadJSON({src, raw} = {}){
 
 		if(src){
 			try {
@@ -102,7 +112,7 @@ export class JSONVisualizer extends HTMLElement {
 			}
 		}
 		else {
-			this.json = rawJSON;
+			this.json = raw;
 
 			await this.renderJSON(this.json);
 		}
@@ -278,7 +288,7 @@ export class JSONVisualizer extends HTMLElement {
 		};
 	}
 
-	//MARK:
+	//MARK: Toggle Lines
 	#toggleLines = (e) => {
 
 		const {number, level} = e;
@@ -305,16 +315,50 @@ export class JSONVisualizer extends HTMLElement {
 		}
 	}
 
+
+	#renderCopyButton(){
+		const btn = document.createElement("button");
+		btn.classList.add("copy-btn");
+
+		const iconContainer = document.createElement("div");
+		iconContainer.classList.add("copy-icon");
+
+		const slot = this.shadowRoot.querySelector('slot[name="copy-icon"');
+		const iconTemplate = slot.assignedNodes().at(0) ?? slot.querySelector("template");
+		const icon = iconTemplate.content.cloneNode(true);
+
+		iconContainer.append(icon);
+		btn.append(iconContainer);
+
+		btn.addEventListener("click", this.#handleCopy);
+
+		this.shadowRoot.append(btn);
+	}
+	#handleCopy = (e) => {
+
+		navigator.clipboard.writeText(JSON.stringify(this.data, null, 2))
+		.then(() => {
+			this.dispatchEvent(new CustomEvent("copied", { detail: { data: this.data } }));
+			console.log("JSON copied to clipboard");
+		})
+		.catch((error) => {
+			console.error("Failed to copy JSON:", error);
+		});
+	}
+
 	
 	//MARK: Getters and Setters
 	set json(value) {
+
 		if(value) {
-			if(typeof value !== "string") value = JSON.stringify(value);
+
+			this.data = typeof value === "string" ? JSON.parse(value) : value;
 		
-			this.setAttribute("json", value);
+			this.setAttribute("json", JSON.stringify(this.data));
 		} 
 		else {
 			this.removeAttribute("json");
+			this.data = null;
 		}
 	}
 	get json() {
