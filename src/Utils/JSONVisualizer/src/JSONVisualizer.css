@@ -4,20 +4,21 @@
     height: 100%;
     position: relative;
     
-    --tab-size: 20px;
     --line-height: 1.25;
+    --line-elements-gap: 5px;
+    --line-white-space: normal;
     --font: Consolas, "Courier New", monospace, sans-serif;
 
-    --numbers-padding: 5px;
-    --numbers-color: #777;
-    --numbers-background: transparent;
-    --numbers-text-align: right;
-    --numbers-width: 2ch;
+    --line-number-padding: 5px;
+    --line-number-color: #777;
+    --line-number-background: transparent;
+    --line-number-text-align: right;
+    --line-number-width: 2ch;
 
-    --toggle-btn-width: 25px;
+    --toggle-btn-width: 15px;
     --toggle-btn-color: #777;
     --toggle-btn-hover-color: #fff;
-    --toggle-btn-padding: 0px 5px;
+    --toggle-btn-padding: 0;
 
     --copy-btn-width: 40px;
     --copy-btn-height: 40px;
@@ -28,7 +29,7 @@
     --indentation-guides-lines-color: #444;
     --indentation-guides-lines-width: 1px;
     
-    --json-tab-size: 20px;
+    --json-tab-size: 4ch;
 
     /* Theme Colors */
     --json-background: #222;
@@ -54,15 +55,16 @@
 
     .line {
         display: flex;
+        gap: var(--line-elements-gap);
 
         .line-number {
-            width: var(--numbers-width);
+            width: var(--line-number-width);
             flex-grow: 0;
             flex-shrink: 0;
-            padding-inline: var(--numbers-padding);
-            color: var(--numbers-color);
-            background-color: var(--numbers-background);
-            text-align: var(--numbers-text-align);
+            padding-inline: var(--line-number-padding);
+            color: var(--line-number-color);
+            background-color: var(--line-number-background);
+            text-align: var(--line-number-text-align);
             user-select: none;
         }
 
@@ -85,7 +87,6 @@
             &.active .toggle-icon {
                 rotate: -90deg;
             }
-
             &:hover {
                 color: var(--toggle-btn-hover-color);
             }
@@ -95,16 +96,17 @@
             flex-grow: 1;
             flex-shrink: 1;
 
-            --total-tab-size: calc(var(--level, 0) * var(--tab-size, 20px));
+            --total-tab-size: calc(var(--level, 0) * var(--json-tab-size, 20px));
 
             padding-left: var(--total-tab-size);
+            white-space: var(--line-white-space);
 
             background-image: repeating-linear-gradient(
                 to right,
                 var(--indentation-guides-lines-color) 0,
                 var(--indentation-guides-lines-color) var(--indentation-guides-lines-width),
                 transparent var(--indentation-guides-lines-width),
-                transparent var(--tab-size, 20px)
+                transparent var(--json-tab-size, 20px)
             );
             
             /* limitar la cantidad de líneas con tamaño y posición */
@@ -114,10 +116,11 @@
         }
 
         &:not(:has(.line-toggle-btn)) .line-content {
-            margin-left: var(--toggle-btn-width);
+            margin-left: calc(var(--toggle-btn-width) + var(--line-elements-gap));
         }
     }
 
+    /* Theme */
     span[tags~="brace"]{
         color: var(--json-brace);
     }
@@ -147,9 +150,19 @@
         padding-right: 1ch;
     } 
 }
-:host([toggle-lines="none"]) .JSONVisualizer .line .line-content {
+:host([line-numbers="none"]) .JSONVisualizer .line .line-number {
 
-    margin-left: 0;
+    display: none;
+}
+:host([toggle-lines="none"]) .JSONVisualizer .line {
+
+    .line-toggle-btn {
+        display: none;
+    }
+    .line-content {
+
+        margin-left: 0;
+    }
 }
 :host([indentation-guides-lines="none"]) .JSONVisualizer .line .line-content {
 
@@ -178,4 +191,7 @@
     &:hover {
         color: var(--copy-btn-hover-color);
     }
+}
+:host([copy-button="none"]) .copy-btn  {
+    display: none;
 }
