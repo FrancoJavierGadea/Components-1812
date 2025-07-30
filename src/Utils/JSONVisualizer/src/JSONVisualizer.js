@@ -1,140 +1,4 @@
-
-class JSONLine {
-
-	#node = null;
-
-	constructor(params = {}){
-
-		const { level, number, className = "json-line", name, folded = false } = params;
-
-		this.level = level;
-		this.number = number;
-		this.className = className;
-		this.name = name;
-		this.folded = folded;
-
-		this.tokens = [];
-
-		this.rendered = false;
-	}
-
-	render(){
-		this.rendered = true;
-
-		this.#node = document.createElement("div");
-
-		this.node.classList.add(this.className);
-
-		this.node.setAttribute("level", this.level);
-		this.node.style.setProperty("--level", this.level);
-
-		this.node.setAttribute("number", this.number);
-		this.node.style.setProperty("--number", this.number);
-
-		const content = document.createElement("div");
-		content.classList.add(`${this.className}-content`);
-
-		for(let i = 0; i < this.tokens.length; i++){
-
-			this.content.append( this.renderToken(this.tokens.at(i)) );
-		}
-
-		this.node.append(content);
-
-		return this.node;
-	}
-	renderToken(token = {}){
-		const { type, value, tags = [] } = token;
-
-		const span = document.createElement("span");
-		span.classList.add(`${this.className}-token`);
-		span.classList.add(type);
-
-		span.textContent = String(value);
-
-		span.setAttribute("tags", tags.join(" "));
-
-		return span;
-	}
-
-
-	append(...nodes){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot append nodes before rendering. Please call render() first.`);
-
-		this.content.append(...nodes);	
-	}
-
-	addLineNumber(){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot add line number before rendering. Please call render() first.`);
-
-		const span = document.createElement("span");
-		span.classList.add(`${this.className}-number`);
-
-		span.textContent = this.number;
-
-		this.node.prepend(span);
-	}
-
-	addToggleControl(options = {}){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot add toggle control before rendering. Please call render() first.`);
-		
-		const {icon, callback} = options;
-
-		const button = document.createElement("button");
-		button.classList.add(`${this.className}-toggle-btn`);
-
-		if(icon) button.append(icon);
-
-		this.callback = callback;
-
-		button.addEventListener("click", this.#handleToggle);
-
-		this.node.insertBefore(button, this.content);
-	}
-
-	#handleToggle = (e) => {
-
-		this.folded ? this.unfold() : this.fold();
-
-		this.callback(this);
-	}
-
-	clearListeners(){
-		this.node.querySelector(`${this.className}-toggle-btn`).removeEventListener("click", this.#handleToggle);
-	}
-	
-	fold(){
-		this.folded = true;
-		this.node.style.display = "none";
-		this.node.setAttribute("folded", "");
-	}
-	unfold(){
-		this.folded = false;
-		this.node.style.display = "";
-		this.node.removeAttribute("folded");
-	}
-
-
-
-	get content(){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot get content before rendering. Please call render() first.`);
-		
-		return this.node.querySelector(`${this.className}-content`);
-	}
-
-	get node(){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot get node before rendering. Please call render() first.`);
-
-		return this.#node;
-	}
-
-}
-
+import {JSONLine} from "./JSONLine.js";
 
 export class JSONVisualizer extends HTMLElement {
 	/**
@@ -249,7 +113,7 @@ export class JSONVisualizer extends HTMLElement {
 
 				if(response.ok){
 
-					const result = response.json();
+					const result = await response.json();
 					this.json = result;
 	
 					await this.renderJSON(this.json);
@@ -280,17 +144,15 @@ export class JSONVisualizer extends HTMLElement {
 			return;
 		}
 
+		//Create Lines
 		this.lines = [];
 
     	const tokens = await JSONVisualizer.getTokens(rawJSON);
 
-    	const JSONContent = document.createElement("div");
-    	JSONContent.classList.add("JSON-content");
-
 		let currentLine = null;
 		let level = 0;
 		let lineNumber = 1;
-
+		
     	for (let i = 0; i < tokens.length; i++) {
 
       		const { type, value, tags } = tokens.at(i);
@@ -310,16 +172,18 @@ export class JSONVisualizer extends HTMLElement {
 			//Crear una nueva linea si no existe
 			if(!currentLine) {
 
-				currentLine = this.#createLine({ level, number: lineNumber++ });
+				currentLine = new JSONLine({ 
+					className: "line", 
+					level, 
+					number: lineNumber++, 
+					showNumber: this.lineNumbers !== 'none' 
+				});
+
 				this.lines.push(currentLine);
-
-				if(this.lineNumbers !== 'none') currentLine.addLineNumber();
-
-				JSONContent.append(currentLine.node);
 			}
 
 			//Crear span del token
-			currentLine.append( this.#createSpan({ type, value, tags }) );
+			currentLine.tokens.push({ type, value, tags });
 
 			if (["brace-close", "bracket-close"].includes(type)) {
 
@@ -327,10 +191,8 @@ export class JSONVisualizer extends HTMLElement {
 
 				if (nextToken?.type === "comma") {
 
-					const { type, value, tags } = nextToken;
-
 					// Agregar la coma en la misma línea
-					currentLine.append( this.#createSpan({ type, value, tags }) );
+					currentLine.tokens.push(nextToken);
 
 					// Saltar el token de coma y crear una nueva linea
 					i++;
@@ -338,32 +200,42 @@ export class JSONVisualizer extends HTMLElement {
 				}
       		}
 
-			
 			if(["brace-open", "bracket-open"].includes(type)){
 
-				level++;
+				if(this.toggleLines !== 'none'){
+					currentLine.toggleControl = true;
+					currentLine.toggleActive = level + 1 >= this.renderDeep;
+				};
 
-				if(this.toggleLines !== 'none') currentLine.addToggleControl(this.#toggleLines);
+				level++;
 			};
 
 			// Decide si se debe crear nueva línea DESPUÉS
 			if(["brace-open","brace-close","bracket-open","bracket-close","comma"].includes(type)) currentLine = null;
     	}
 
+		//Render JSON
+		const JSONContent = document.createElement("div");
+    	JSONContent.classList.add("JSON-content");
+
+		for(let i = 0; i < this.lines.length; i++){
+
+			const line = this.lines.at(i);
+
+			if(line.level < this.renderDeep){
+
+				JSONContent.append( line.render({toggleIcon: this.#createIcon("toggle-icon")}) );
+			}
+
+		}
+
     	this.shadowRoot.querySelector(".JSONVisualizer").replaceChildren(JSONContent);
 		this.shadowRoot.querySelector(".JSONVisualizer").style.setProperty("--line-number-width", `${String(this.lines.length).length}ch`);
 
+		this.addEventListener("toggle-line", this.#toggleLines);
+
 		if(this.copyButton !== 'none') this.shadowRoot.append( this.#createCopyButton('copy-btn') );
   	}
-	#createSpan({ type, value, tags = [] } = {}) {
-
-		const span = document.createElement("span");
-		span.classList.add(type);
-		span.textContent = value !== null ? value : "null";
-		span.setAttribute("tags", tags.join(" "));
-
-		return span;
-	}
 	#createIcon(name){
 
 		const iconContainer = document.createElement("div");
@@ -380,77 +252,13 @@ export class JSONVisualizer extends HTMLElement {
 		return iconContainer;
 	}
 
-	//MARK: Create Line
-	#createLine({ level, number = 0 } = {}) {
-
-		const line = document.createElement("div");
-		line.classList.add("line");
-		line.setAttribute("level", level);
-		line.style.setProperty("--level", level);
-
-		line.setAttribute("number", number);
-		line.style.setProperty("--number", number);
-
-		const createToggleButton = () => {
-
-			const btn = document.createElement("button");
-			btn.classList.add("line-toggle-btn");
-
-			btn.append( this.#createIcon("toggle-icon") );
-			
-			return btn;
-		}
-		const createLineNumber = (number) => {
-
-			const lineNumber = document.createElement("span");
-			lineNumber.classList.add("line-number");
-			lineNumber.textContent = number;
-
-			return lineNumber;
-		}
-
-		const content = document.createElement("div");
-		content.classList.add("line-content");
-
-		line.append(content);
-
-		return {
-			node: line,
-			content,
-			number,
-			level,
-			append(...nodes){
-				this.content.append(...nodes);
-			},
-			addToggleControl(callback = () => {}){
-
-				const btn = createToggleButton();
-
-				const handleToggle = (e) => {
-
-					callback(this);
-
-					btn.classList.toggle("active");
-				}; 
-
-				btn.addEventListener("click", handleToggle);
-
-				this.clearListeners = () => {
-					btn.removeEventListener("click", handleToggle);
-				}
-
-				this.node.insertBefore(btn, this.content);
-			},
-			addLineNumber(){
-				this.node.prepend( createLineNumber(this.number) );
-			}
-		};
-	}
-
 	//MARK: Toggle Lines
 	#toggleLines = (e) => {
 
-		const {number, level} = e;
+		const {number, level} = e.detail;
+
+		let fragment = null;
+		let lastLine = null;
 
 		for(let i = number; i < this.lines.length; i++){
 
@@ -458,19 +266,34 @@ export class JSONVisualizer extends HTMLElement {
 
 			if(line.level > level){
 
-				if(line.hideBy){
+				if(!line.rendered){
 
-					if(line.hideBy === number){
-						delete line.hideBy;
-						line.node.style.display = "";
+					fragment ??= document.createDocumentFragment();
+					fragment.append( line.render() );
+
+					lastLine = line.number;
+					continue;
+				}
+
+				if(line.folded){
+
+					if(line.foldedBy === number){
+			
+						line.unfold();
 					}
 				}
 				else {
-					line.hideBy = number;
-					line.node.style.display = "none";
+
+					line.fold(number);
 				}
 			}
-			else break;
+			else {
+				break;
+			};
+		}
+
+		if(fragment){
+			this.shadowRoot.querySelector(".JSONVisualizer .JSON-content").insertBefore(fragment, this.lines.at(lastLine).node);
 		}
 	}
 
@@ -546,7 +369,9 @@ export class JSONVisualizer extends HTMLElement {
 		return this.getAttribute("copy-button");
 	}
 
-
+	get renderDeep(){
+		return 2;
+	}
 
 	set src(value){
 		value ? this.setAttribute("src", value) : this.removeAttribute("src");
