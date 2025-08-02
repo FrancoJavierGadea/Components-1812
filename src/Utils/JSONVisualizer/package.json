@@ -1,14 +1,14 @@
 {
     "name": "@components-1812/json-visualizer",
-    "description": "Custom Grid element with radial gradient effect",
-    "keywords": ["web-components", "web-components-library", "grid", "grid-effect", "svg", "svg-grid", "custom-grid"],
+    "description": "A web component for visualizing JSON data in a collapsible tree view.",
+    "keywords": ["web-components", "web-components-library", "json", "visualization", "tree-view", "collapsible"],
     "author": "Franco Javier Gadea",
     "license": "MIT",
     "version": "0.0.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/FrancoJavierGadea/Components-1812.git",
-        "directory": "src/SVG/Grid"
+        "directory": "src/Utils/JSONVisualizer"
     },
     "type": "module",
     "scripts": {
@@ -18,20 +18,18 @@
         ".": "./src/index.js",
         "./index": "./src/index.js",
         "./index.js": "./src/index.js",
-        "./Grid": "./src/Grid.js",
-        "./Grid.js": "./src/Grid.js",
-        "./Grid.css": "./src/Grid.css",
+        "./JSONVisualizer": "./src/JSONVisualizer.js",
+        "./JSONVisualizer.js": "./src/JSONVisualizer.js",
+        "./JSONVisualizer.css": "./src/JSONVisualizer.css",
+        "./JSONTokenizer": "./src/JSONTokenizer.js",
+        "./JSONTokenizer.js": "./src/JSONTokenizer.js",
         "./define": "./src/define.js",
-        "./define.js": "./src/define.js",
-        "./assets/*": "./src/assets/*"
+        "./define.js": "./src/define.js"
     },
     "files": [
-        "src/index.js",
-        "src/Grid.js",
-        "src/Grid.css",
-        "src/define.js",
-        "src/assets/grid.svg"
+        "src/*",
+        "assets/*"
     ],
-    "main": "./src/Grid.js",
-    "style": "./src/Grid.css"
+    "main": "./src/JSONVisualizer.js",
+    "style": "./src/JSONVisualizer.css"
 }

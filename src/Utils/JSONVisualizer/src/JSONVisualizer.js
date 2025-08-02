@@ -1,4 +1,5 @@
 import {JSONLine} from "./JSONLine.js";
+import {JSONBlock} from "./JSONBlock.js";
 
 export class JSONVisualizer extends HTMLElement {
 	/**
@@ -11,6 +12,10 @@ export class JSONVisualizer extends HTMLElement {
 	};
 
  	static getTokens = null;
+
+	static defaults = {
+		renderDeep: Infinity
+	}
 
 	lines = [];
 
@@ -91,12 +96,8 @@ export class JSONVisualizer extends HTMLElement {
 
   	disconnectedCallback(){
 
-		for(let i = 0; i < this.lines.length; i++){
-
-			this.lines.at(i).clearListeners?.();
-		}
-
-		this.shadowRoot.querySelector('.copy-btn')?.removeEventListener("click", this.#handleCopy);
+		this.clear();
+		this.clearListeners();
 	}
 
   	//MARK: loadJSON
@@ -133,21 +134,17 @@ export class JSONVisualizer extends HTMLElement {
 		this.setAttribute("ready", "");
 	}
 
-	//MARK: renderJSON
-  	async renderJSON(rawJSON) {
-		if (!rawJSON) {
-			console.warn(`No JSON provided to renderJSON method.`);
-			return;
-		}
+	//MARK: createJSONLines
+	async #createJSONLines(rawJSON){
+
 		if (!JSONVisualizer.getTokens) {
 			console.warn(`JSONVisualizer.getTokens is not defined. Please ensure that the JSONTokenizer`);
 			return;
 		}
 
-		//Create Lines
-		this.lines = [];
+		const lines = [];
 
-    	const tokens = await JSONVisualizer.getTokens(rawJSON);
+		const tokens = await JSONVisualizer.getTokens(rawJSON);
 
 		let currentLine = null;
 		let level = 0;
@@ -157,44 +154,39 @@ export class JSONVisualizer extends HTMLElement {
 
       		const { type, value, tags } = tokens.at(i);
 
-      		// Decide if se debe crear una nueva línea ANTES
-			if(["brace-close", "bracket-close"].includes(type)) {
+			if(["brace-close", "bracket-close"].includes(type)){
 
+				level--;
+
+				//Se asegura de que } y ] siempre esten en una nueva linea
 				const previousToken = tokens.at(i - 1);
 
 				if ( !["brace-open", "bracket-open", "comma"].includes(previousToken?.type) ) {
 
 					currentLine = null;
 				}
-			}
-			if(["brace-close", "bracket-close"].includes(type)) level--;
+			};
 
 			//Crear una nueva linea si no existe
 			if(!currentLine) {
 
-				currentLine = new JSONLine({ 
-					className: "line", 
-					level, 
-					number: lineNumber++, 
-					showNumber: this.lineNumbers !== 'none' 
-				});
+				currentLine = new JSONLine({ level, number: lineNumber++ });
 
-				this.lines.push(currentLine);
+				lines.push(currentLine);
 			}
 
-			//Crear span del token
-			currentLine.tokens.push({ type, value, tags });
+			currentLine.addToken({ type, value, tags });
 
-			if (["brace-close", "bracket-close"].includes(type)) {
+			if(["brace-close", "bracket-close"].includes(type)) {
 
 				const nextToken = tokens.at(i + 1);
 
 				if (nextToken?.type === "comma") {
 
-					// Agregar la coma en la misma línea
-					currentLine.tokens.push(nextToken);
+					//Agregar la coma en la misma línea
+					currentLine.addToken(nextToken);
 
-					// Saltar el token de coma y crear una nueva linea
+					//Saltar el token de coma y crear una nueva linea
 					i++;
 					currentLine = null; continue;
 				}
@@ -202,98 +194,108 @@ export class JSONVisualizer extends HTMLElement {
 
 			if(["brace-open", "bracket-open"].includes(type)){
 
-				if(this.toggleLines !== 'none'){
-					currentLine.toggleControl = true;
-					currentLine.toggleActive = level + 1 >= this.renderDeep;
-				};
-
 				level++;
 			};
 
-			// Decide si se debe crear nueva línea DESPUÉS
-			if(["brace-open","brace-close","bracket-open","bracket-close","comma"].includes(type)) currentLine = null;
+			//Crea un nueva linea
+			if(["brace-open","brace-close","bracket-open","bracket-close","comma"].includes(type)){
+
+				currentLine = null;
+			}
     	}
 
-		//Render JSON
-		const JSONContent = document.createElement("div");
-    	JSONContent.classList.add("JSON-content");
+		return lines;
+	}
+	//MARK: RenderJSON
+  	async renderJSON(rawJSON) {
+		if (!rawJSON) {
+			console.warn(`No JSON provided to renderJSON method.`);
+			return;
+		}
+		
+		//Create Lines
+		const lines = await this.#createJSONLines(rawJSON);
 
-		for(let i = 0; i < this.lines.length; i++){
+		const blocksStack = [];
+		this.rootBlock = null;
 
-			const line = this.lines.at(i);
+		for(let i = 0; i < lines.length; i++){
 
-			if(line.level < this.renderDeep){
+			const line = lines.at(i);
 
-				JSONContent.append( line.render({toggleIcon: this.#createIcon("toggle-icon")}) );
+			line.showNumber = this.lineNumbers !== 'none';
+
+			if(line.isOpenBlock){
+
+				const block = new JSONBlock({
+					level: line.level,
+					showContent: line.level < this.renderDeep
+				});
+
+				block.openLine = line;
+				line.block = block;
+
+				if(this.toggleLines !== 'none'){
+
+					line.toggleControl = true;
+					line.toggleActive = !block.showContent;
+					line.toggleIcon = this.#createIcon("toggle-icon");
+				}
+				
+				blocksStack.push(block);
+				continue;
+			}
+			if(line.isCloseBlock){
+
+				const block = blocksStack.pop();
+				block.closeLine = line;
+				line.block = block;
+
+				// estamos dentro de otro bloque → anidarlo
+				if (blocksStack.length > 0) {
+	
+					blocksStack.at(-1).content.push(block);
+				}
+				else {
+					this.rootBlock = block;
+				}
+
+				continue;
 			}
 
+			const currentBlock = blocksStack.at(-1);
+
+			line.block = currentBlock;
+			currentBlock.content.push(line);
 		}
 
-    	this.shadowRoot.querySelector(".JSONVisualizer").replaceChildren(JSONContent);
-		this.shadowRoot.querySelector(".JSONVisualizer").style.setProperty("--line-number-width", `${String(this.lines.length).length}ch`);
+		this.shadowRoot.querySelector(".JSONVisualizer").append( this.rootBlock.render() );
 
-		this.addEventListener("toggle-line", this.#toggleLines);
+		this.addEventListener("toggle-lines", this.#handletoggleLines);
 
 		if(this.copyButton !== 'none') this.shadowRoot.append( this.#createCopyButton('copy-btn') );
   	}
 	#createIcon(name){
 
-		const iconContainer = document.createElement("div");
-		iconContainer.classList.add(name);
-
 		const slot = this.shadowRoot.querySelector(`slot[name="${name}"`);
-
 		const iconTemplate = slot.assignedNodes().at(0) ?? slot.querySelector("template");
-		
 		const icon = iconTemplate.content.cloneNode(true);
 
-		iconContainer.append(icon);
-
-		return iconContainer;
+		return icon;
 	}
 
 	//MARK: Toggle Lines
-	#toggleLines = (e) => {
+	#handletoggleLines = (e) => {
+		const {line} = e.detail;
 
-		const {number, level} = e.detail;
+		if(!line.block.showContent){
 
-		let fragment = null;
-		let lastLine = null;
-
-		for(let i = number; i < this.lines.length; i++){
-
-			const line = this.lines.at(i);
-
-			if(line.level > level){
-
-				if(!line.rendered){
-
-					fragment ??= document.createDocumentFragment();
-					fragment.append( line.render() );
-
-					lastLine = line.number;
-					continue;
-				}
-
-				if(line.folded){
-
-					if(line.foldedBy === number){
-			
-						line.unfold();
-					}
-				}
-				else {
-
-					line.fold(number);
-				}
-			}
-			else {
-				break;
-			};
+			line.block.showContent = true;
+			line.block.renderContent();
 		}
+		else {
 
-		if(fragment){
-			this.shadowRoot.querySelector(".JSONVisualizer .JSON-content").insertBefore(fragment, this.lines.at(lastLine).node);
+			line.block.folded ? line.block.unfold() : line.block.fold();
 		}
 	}
 
@@ -321,7 +323,16 @@ export class JSONVisualizer extends HTMLElement {
 		});
 	}
 
-	
+	clear(){
+
+		this.rootBlock?.dispose();
+	}
+	clearListeners(){
+
+		this.removeEventListener("toggle-lines", this.#handletoggleLines);
+		this.shadowRoot.querySelector(".copy-btn")?.removeEventListener("click", this.#handleCopy);
+	}
+
 	//MARK: Getters and Setters
 	set json(value) {
 
@@ -370,7 +381,12 @@ export class JSONVisualizer extends HTMLElement {
 	}
 
 	get renderDeep(){
-		return 2;
+
+		const value = this.getAttribute('render-deep');
+
+		if(!value || Number.isNaN(Number(value))) return JSONVisualizer.defaults.renderDeep;
+
+		return Number(value);
 	}
 
 	set src(value){

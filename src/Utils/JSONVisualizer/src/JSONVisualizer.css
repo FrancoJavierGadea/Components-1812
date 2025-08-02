@@ -53,11 +53,11 @@
 }
 :host .JSONVisualizer {
 
-    .line {
+    .json-line {
         display: flex;
         gap: var(--line-elements-gap);
 
-        .line-number {
+        .json-line-number {
             width: var(--line-number-width);
             flex-grow: 0;
             flex-shrink: 0;
@@ -68,7 +68,7 @@
             user-select: none;
         }
 
-        .line-toggle-btn {
+        .json-line-toggle-btn {
             display: block;
             flex-grow: 0;
             flex-shrink: 0;
@@ -79,12 +79,12 @@
             border: none;
             color: var(--toggle-btn-color);
 
-            .toggle-icon, .toggle-icon svg {
+            .json-line-toggle-icon, .json-line-toggle-icon svg {
                 display: block;
                 width: 100%;
                 height: 100%;
             }
-            &.active .toggle-icon {
+            &.active .json-line-toggle-icon {
                 rotate: -90deg;
             }
             &:hover {
@@ -92,7 +92,7 @@
             }
         }
 
-        .line-content {
+        .json-line-content {
             flex-grow: 1;
             flex-shrink: 1;
 
@@ -115,11 +115,11 @@
             background-position: 0 0;
         }
 
-        &:not(:has(.line-toggle-btn)) .line-content {
+        &:not(:has(.json-line-toggle-btn)) .json-line-content {
             margin-left: calc(var(--toggle-btn-width) + var(--line-elements-gap));
         }
     }
-    .line[folded]{
+    .json-block[folded] .json-block-content {
         display: none;
     }
 
@@ -153,21 +153,21 @@
         padding-right: 1ch;
     } 
 }
-:host([line-numbers="none"]) .JSONVisualizer .line .line-number {
+:host([line-numbers="none"]) .JSONVisualizer .json-line .json-line-number {
 
     display: none;
 }
-:host([toggle-lines="none"]) .JSONVisualizer .line {
+:host([toggle-lines="none"]) .JSONVisualizer .json-line {
 
-    .line-toggle-btn {
+    .json-line-toggle-btn {
         display: none;
     }
-    .line-content {
+    .json-line-content {
 
         margin-left: 0;
     }
 }
-:host([indentation-guides-lines="none"]) .JSONVisualizer .line .line-content {
+:host([indentation-guides-lines="none"]) .JSONVisualizer .json-line .json-line-content {
 
     background-image: none;
 }

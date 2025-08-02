@@ -6,34 +6,31 @@ export class JSONLine {
 	constructor(params = {}){
 
 		const { 
-			level, number, name, 
+			level, number, 
 			className = "json-line", 
 			showNumber = false,
-			toggleControl = false 
+			toggleControl = false,
+			toggleIcon = null,
+			isOpenBlock = false,
+			isCloseBlock = false 
 		} = params;
 
 		this.level = level;
 		this.number = number;
-		this.name = name;
-
 		this.className = className;
+
+		this.isOpenBlock = isOpenBlock;
+		this.isCloseBlock = isCloseBlock;
+
 		this.showNumber = showNumber;
 		this.toggleControl = toggleControl;
-
-		this.folded = false;
-		this.foldedBy = null;
+		this.toggleIcon = toggleIcon;
 
 		this.tokens = [];
-
-		this.rendered = false;
 	}
 
-	render({toggleIcon = null} = {}){
-
-		this.rendered = true;
-
+	render(){
 		this.#node = document.createElement("div");
-
 		this.node.classList.add(this.className);
 
 		this.node.setAttribute("level", this.level);
@@ -41,9 +38,6 @@ export class JSONLine {
 
 		this.node.setAttribute("number", this.number);
 		this.node.style.setProperty("--number", this.number);
-
-		if(this.folded) this.node.setAttribute("folded", this.foldedBy);
-		if(this.name) this.node.setAttribute("name", this.name);
 
 		//Render tokens
 		const content = document.createElement("div");
@@ -68,9 +62,9 @@ export class JSONLine {
 		}
 
 		//Render Toggle control
-		if(this.toggleControl){
+		if(this.toggleControl && this.isOpenBlock){
 
-			this.node.insertBefore(this.renderToggleControl(toggleIcon), content);
+			this.node.insertBefore(this.renderToggleControl(), content);
 		}
 
 		return this.node;
@@ -88,13 +82,25 @@ export class JSONLine {
 
 		return span;
 	}
-	renderToggleControl(icon = null){
+	renderToggleControl(){
 
 		const button = document.createElement("button");
 		button.classList.add(`${this.className}-toggle-btn`);
 		button.classList.toggle(`active`, this.toggleActive);
 
-		if(icon) button.append(icon);
+		const icon = document.createElement("span");
+		icon.classList.add(`${this.className}-toggle-icon`);
+
+		if(this.toggleIcon){
+
+			icon.append(this.toggleIcon);
+		}
+		else {
+
+			icon.textContent = "v";
+		}
+
+		button.append(icon);
 
 		button.addEventListener("click", this.#handleToggle);
 
@@ -109,42 +115,38 @@ export class JSONLine {
 
 		button.classList.toggle(`active`);
 
-		this.node.dispatchEvent(new CustomEvent("toggle-line", {
+		this.node.dispatchEvent(new CustomEvent("toggle-lines", {
 			detail: {
-				number: this.number,
-				level: this.level
+				line: this
 			},
 			bubbles: true,
 			composed: true
 		}));
 	}
 
+	dispose(){
+		this.clearListeners();
+		this.#node?.remove();
+		this.#node = null;
+	}
 	clearListeners(){
-		this.node.querySelector(`${this.className}-toggle-btn`)?.removeEventListener("click", this.#handleToggle);
-	}
-	
-	fold(foldedBy = null){
-		this.foldedBy = foldedBy;
-		this.folded = true;
-		if(this.rendered) this.node.setAttribute("folded", this.foldedBy);
-	}
-	unfold(){
-		this.foldedBy = null;
-		this.folded = false;
-		if(this.rendered) this.node.removeAttribute("folded");
+		this.node?.querySelector(`${this.className}-toggle-btn`)?.removeEventListener("click", this.#handleToggle);
+	}	
+
+	addToken(token = {}){
+
+		if(!this.isOpenBlock){
+			this.isOpenBlock = ['brace-open', 'bracket-open'].includes(token.type);
+		}
+		if(!this.isCloseBlock){
+			this.isCloseBlock = ['brace-close', 'bracket-close'].includes(token.type);
+		}
+
+		this.tokens.push(token);
 	}
 
 	//MARK: Getters
-	get content(){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot get content before rendering. Please call render() first.`);
-		
-		return this.node.querySelector(`.${this.className}-content`);
-	}
-
 	get node(){
-
-		if(!this.rendered) throw new Error(`JSONLine: Cannot get node before rendering. Please call render() first.`);
 
 		return this.#node;
 	}

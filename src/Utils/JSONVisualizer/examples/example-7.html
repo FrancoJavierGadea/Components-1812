@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONVisualizer example 1</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+        }
+        body {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 50px;
+        }
+
+        section {
+            width: 1000px;
+            height: 480px;
+            margin: 0 auto;
+            border: 1px solid rgb(141, 11, 11);
+            overflow:auto;
+            resize: both;
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <custom-json-visualizer render-deep="3">
+            {
+                "company": {
+                    "name": "Acme Corp",
+                    "location": "Buenos Aires",
+                    "departments": [
+                        {
+                            "name": "Desarrollo",
+                            "manager": {
+                                "name": "Laura Gómez",
+                                "email": "laura@acme.com"
+                            },
+                            "projects": [
+                                {
+                                    "id": "P001",
+                                    "name": "Plataforma Web",
+                                    "status": "en progreso",
+                                    "milestones": [
+                                        {
+                                            "name": "Diseño UI",
+                                            "completed": true,
+                                            "tasks": [
+                                                {
+                                                    "id": "T1001",
+                                                    "title": "Mockups iniciales",
+                                                    "assignedTo": {
+                                                    "id": "U001",
+                                                    "name": "Franco Gadea",
+                                                    "role": {
+                                                        "name": "Diseñador UX",
+                                                        "level": {
+                                                            "id": 3,
+                                                            "description": "Senior UX con experiencia en accesibilidad"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        </custom-json-visualizer>
+    </section>
+
+    <script type="module">
+        import JSONVisualizer from '../src/JSONVisualizer.js';
+        import JSONTokenizer from '../src/JSONTokenizer.js';
+
+        //Load the stylesheet
+        JSONVisualizer.stylesSheets.links.push('../src/JSONVisualizer.css');
+
+        //Define JSON Tokenizer
+        JSONVisualizer.getTokens = (rawJson) => {
+
+            const tokenizer = new JSONTokenizer(); 
+
+            tokenizer.tokenize(rawJson);
+
+            return tokenizer.tokens;
+        }
+
+        console.log(JSONVisualizer);
+
+        customElements.define('custom-json-visualizer', JSONVisualizer);
+    </script>
+</body>
+</html>
