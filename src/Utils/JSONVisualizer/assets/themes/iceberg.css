@@ -1,0 +1,28 @@
+custom-json-visualizer.iceberg {
+    --font: Consolas, "Courier New", monospace, sans-serif;
+
+    --json-background: #f0f8ff;
+    --json-foreground: #0a1e2b;
+
+    --json-key: #0088cc;
+    --json-string: #005577;
+    --json-number: #447799;
+    --json-boolean: #3366cc;
+    --json-null: #77aadd;
+
+    --json-brace: #225577;
+    --json-bracket: #225577;
+    --json-comma: #88aacc;
+    --json-colon: #88aacc;
+
+    --copy-btn-color: #5588aa;
+    --copy-btn-hover-color: #0a1e2b;
+
+    --toggle-btn-color: #5588aa;
+    --toggle-btn-hover-color: #0a1e2b;
+
+    --line-number-color: #aaccee;
+    --line-number-background: transparent;
+
+    --indentation-guides-lines-color: #dceff8; 
+}

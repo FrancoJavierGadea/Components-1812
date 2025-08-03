@@ -1,0 +1,29 @@
+custom-json-visualizer.light-default {
+
+    --font: Consolas, "Courier New", monospace, sans-serif;
+
+    --json-background: #ffffff;
+    --json-foreground: #111111;
+
+    --json-key: #0066cc;
+    --json-string: #a31515;
+    --json-number: #098658;
+    --json-boolean: #0000ff;
+    --json-null: #795e26;
+
+    --json-brace: #aa00aa;
+    --json-bracket: #aa00aa;
+    --json-comma: #888888;
+    --json-colon: #888888;
+
+    --copy-btn-color: #444444;
+    --copy-btn-hover-color: #000000;
+
+    --toggle-btn-color: #444444;
+    --toggle-btn-hover-color: #000000;
+
+    --line-number-color: #999999;
+    --line-number-background: transparent;
+
+    --indentation-guides-lines-color: #dddddd;
+}

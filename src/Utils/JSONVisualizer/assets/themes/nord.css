@@ -1,0 +1,27 @@
+custom-json-visualizer.nord {
+    --json-background: #2e3440;
+    --json-foreground: #d8dee9;
+
+    --json-key: #81a1c1;
+    --json-string: #a3be8c;
+    --json-number: #b48ead;
+    --json-boolean: #88c0d0;
+    --json-null: #d08770;
+
+    --json-brace: #eceff4;
+    --json-bracket: #eceff4;
+    --json-comma: #4c566a;
+    --json-colon: #4c566a;
+
+    --copy-btn-color: #888;
+    --copy-btn-hover-color: #fff;
+
+    --toggle-btn-color: #888;
+    --toggle-btn-hover-color: #fff;
+
+    --line-number-color: #4c566a;
+    --line-number-background: transparent;
+
+    --indentation-guides-lines-color: #3b4252;
+
+}

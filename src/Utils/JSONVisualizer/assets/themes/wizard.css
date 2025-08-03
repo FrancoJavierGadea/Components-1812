@@ -1,0 +1,28 @@
+custom-json-visualizer.wizard {
+  --font: "Fira Code", Consolas, "Courier New", monospace;
+
+  --json-background: #1a1125;
+  --json-foreground: #f2e9ff;
+
+  --json-key: #caa9fa;         /* lavanda mágica */
+  --json-string: #a0e8af;      /* verde encantado */
+  --json-number: #ffe084;      /* oro de alquimia */
+  --json-boolean: #9be7ff;     /* azul arcano */
+  --json-null: #eab0fc;        /* rosa etéreo */
+
+  --json-brace: #ffd700;
+  --json-bracket: #ffd700;
+  --json-comma: #d4d4d4;
+  --json-colon: #d4d4d4;
+
+  --copy-btn-color: #aa88cc;
+  --copy-btn-hover-color: #ffffff;
+
+  --toggle-btn-color: #aa88cc;
+  --toggle-btn-hover-color: #ffffff;
+
+  --line-number-color: #715d8a;
+  --line-number-background: transparent;
+
+  --indentation-guides-lines-color: #392c4d;
+}

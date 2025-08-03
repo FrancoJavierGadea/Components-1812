@@ -1,0 +1,27 @@
+custom-json-visualizer.monokai {
+
+    --json-background: #272822;
+    --json-foreground: #f8f8f2;
+
+    --json-key: #f92672;
+    --json-string: #e6db74;
+    --json-number: #ae81ff;
+    --json-boolean: #66d9ef;
+    --json-null: #fd971f;
+
+    --json-brace: #f8f8f2;
+    --json-bracket: #f8f8f2;
+    --json-comma: #75715e;
+    --json-colon: #75715e;
+
+    --copy-btn-color: #999;
+    --copy-btn-hover-color: #fff;
+
+    --toggle-btn-color: #999;
+    --toggle-btn-hover-color: #fff;
+
+    --line-number-color: #75715e;
+    --line-number-background: transparent;
+
+    --indentation-guides-lines-color: #444;
+}
