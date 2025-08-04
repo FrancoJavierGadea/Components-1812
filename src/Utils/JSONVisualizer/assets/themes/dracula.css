@@ -13,11 +13,11 @@ custom-json-visualizer.dracula {
     --json-comma: #6272a4;
     --json-colon: #6272a4;
 
-    --copy-btn-color: #bbb;
-    --copy-btn-hover-color: #fff;
+    --copy-button-color: #bbb;
+    --copy-button-hover-color: #fff;
 
-    --toggle-btn-color: #bbb;
-    --toggle-btn-hover-color: #fff;
+    --toggle-button-color: #bbb;
+    --toggle-button-hover-color: #fff;
 
     --line-number-color: #6272a4;
     --line-number-background: transparent;

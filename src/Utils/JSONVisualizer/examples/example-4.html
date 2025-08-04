@@ -54,11 +54,34 @@
     </section>
 
     <script type="module">
-        import JSONVisualizer from '../src/JSONVisualizer.js';
-        import JSONTokenizer from '../src/JSONTokenizer.js';
+        const mode = 'production';
+
+        const SOURCES = {
+            development: {
+                JSONVisualizer: '../src/JSONVisualizer.js',
+                JSONTokenizer: '../src/JSONTokenizer.js',
+                JSONVisualizerCSS: '../src/JSONVisualizer.css'
+            },
+            production: {
+                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.js",
+                JSONTokenizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONTokenizer.js",
+                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.css'
+            }
+        }
+
+        const [{JSONVisualizer}, {JSONTokenizer}] = await Promise.all([
+            import(SOURCES[mode].JSONVisualizer),
+            import(SOURCES[mode].JSONTokenizer)
+        ]);
+        const JSONVisualizerCSS = SOURCES[mode].JSONVisualizerCSS;
+
+        console.log('MODE:', mode);
+        console.log(JSONVisualizer);
+        console.log(JSONTokenizer);
+        console.log(JSONVisualizerCSS);
 
         //Load the stylesheet
-        JSONVisualizer.stylesSheets.links.push('../src/JSONVisualizer.css');
+        JSONVisualizer.stylesSheets.links.push(JSONVisualizerCSS);
 
         //Define JSON Tokenizer
         JSONVisualizer.getTokens = (rawJson) => {
@@ -67,7 +90,7 @@
 
             tokenizer.tokenize(rawJson);
 
-            return tokenizer.tokens;
+            return tokenizer.tokens;//[{type, value, tags}]
         }
 
         console.log(JSONVisualizer);

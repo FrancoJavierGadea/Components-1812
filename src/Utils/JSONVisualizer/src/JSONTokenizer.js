@@ -2,6 +2,8 @@
 
 export class JSONTokenizer {
 
+    static version = "0.0.2";
+
     constructor(){
         this.tokens = [];
     }
@@ -30,7 +32,7 @@ export class JSONTokenizer {
             if(char === '{'){   
                 contextStack.push('{');
 
-                this.tokens.push({ type: 'brace-open', value: char, tags: ['brace', 'brace-open'] });
+                this.tokens.push({ type: 'brace-open', value: char, tags: ['brace', 'open'] });
 
                 role = 'key';
 
@@ -39,14 +41,14 @@ export class JSONTokenizer {
             if(char === '}'){   
                 contextStack.pop();
 
-                this.tokens.push({ type: 'brace-close', value: char, tags: ['brace', 'brace-close'] });
+                this.tokens.push({ type: 'brace-close', value: char, tags: ['brace', 'close'] });
 
                 i++; continue;
             }
             if(char === '['){   
                 contextStack.push('[');
 
-                this.tokens.push({ type: 'bracket-open', value: char, tags: ['bracket', 'bracket-open'] });
+                this.tokens.push({ type: 'bracket-open', value: char, tags: ['bracket', 'open'] });
 
                 role = 'array-value';
 
@@ -55,7 +57,7 @@ export class JSONTokenizer {
             if(char === ']'){   
                 contextStack.pop();
 
-                this.tokens.push({ type: 'bracket-close', value: char, tags: ['bracket', 'bracket-close'] });
+                this.tokens.push({ type: 'bracket-close', value: char, tags: ['bracket', 'close'] });
 
                 i++; continue;
             }

@@ -13,11 +13,11 @@ custom-json-visualizer.solarized-light {
     --json-comma: #586e75;
     --json-colon: #586e75;
 
-    --copy-btn-color: #586e75;
-    --copy-btn-hover-color: #073642;
+    --copy-button-color: #586e75;
+    --copy-button-hover-color: #073642;
 
-    --toggle-btn-color: #586e75;
-    --toggle-btn-hover-color: #073642;
+    --toggle-button-color: #586e75;
+    --toggle-button-hover-color: #073642;
 
     --line-number-color: #93a1a1;
     --line-number-background: transparent;

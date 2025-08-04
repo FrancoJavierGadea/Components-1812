@@ -16,11 +16,11 @@ custom-json-visualizer.default-dark {
     --json-comma: #d4d4d4;         
     --json-colon: #d4d4d4; 
 
-    --copy-btn-color: #777;
-    --copy-btn-hover-color: #fff;
+    --copy-button-color: #777;
+    --copy-button-hover-color: #fff;
 
-    --toggle-btn-color: #777;
-    --toggle-btn-hover-color: #fff;
+    --toggle-button-color: #777;
+    --toggle-button-hover-color: #fff;
 
     --line-number-color: #777;
     --line-number-background: transparent;

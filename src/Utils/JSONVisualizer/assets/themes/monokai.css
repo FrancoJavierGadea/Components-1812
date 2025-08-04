@@ -14,11 +14,11 @@ custom-json-visualizer.monokai {
     --json-comma: #75715e;
     --json-colon: #75715e;
 
-    --copy-btn-color: #999;
-    --copy-btn-hover-color: #fff;
+    --copy-button-color: #999;
+    --copy-button-hover-color: #fff;
 
-    --toggle-btn-color: #999;
-    --toggle-btn-hover-color: #fff;
+    --toggle-button-color: #999;
+    --toggle-button-hover-color: #fff;
 
     --line-number-color: #75715e;
     --line-number-background: transparent;

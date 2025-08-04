@@ -1,7 +1,12 @@
 import {JSONLine} from "./JSONLine.js";
 import {JSONBlock} from "./JSONBlock.js";
+import JSONTokenizer from "./JSONTokenizer.js";
+import { CopyButton } from "./CopyButton.js";
 
 export class JSONVisualizer extends HTMLElement {
+
+	static version = "0.0.2";
+
 	/**
 	 * @type {{links:string[], adopted:CSSStyleSheet[], raw:string[]}} Stylesheets to be applied to the component
 	 */
@@ -11,13 +16,22 @@ export class JSONVisualizer extends HTMLElement {
 		raw: [],
 	};
 
- 	static getTokens = null;
+ 	static getTokens = async (rawJson) => {
+
+        const tokenizer = new JSONTokenizer(); 
+
+        tokenizer.tokenize(rawJson);
+
+        return tokenizer.tokens;
+    };
 
 	static defaults = {
 		renderDeep: Infinity
 	}
 
-	lines = [];
+	#rootBlock = null;
+	#copyButton = null;
+	#data = null;
 
 	constructor() {
 		super();
@@ -25,18 +39,17 @@ export class JSONVisualizer extends HTMLElement {
 		this.attachShadow({ mode: "open" });
 		this.shadowRoot.innerHTML = `
 			<div class="JSONVisualizer"></div>
-			<slot name="toggle-icon">
+			<slot name="icons">
 				<template>
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+					<svg data-name="toggle" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 						<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
 					</svg>
-				</template>
-			</slot>
-			<slot name="copy-icon">
-				<template>
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+					<svg data-name="copy" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 						<path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
 						<path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+					</svg>
+					<svg data-name="copy-done" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+						<path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/>
 					</svg>
 				</template>
 			</slot>
@@ -78,60 +91,77 @@ export class JSONVisualizer extends HTMLElement {
 	}
 
 	//MARK: callback lifecycle
+	static observedAttributes = ['json', 'src'];
+
+	attributeChangedCallback(name, oldValue, newValue){
+
+		if(name === 'src' && newValue !== oldValue){
+
+			this.loadJSON(newValue);
+		}
+		if(name === 'json' && newValue !== oldValue){
+
+			this.renderJSON(newValue);
+		}
+		
+	}
+
 	connectedCallback() {
 
-		if(this.src){
+		if(!this.src && !this.json){
 
-			this.loadJSON({src: this.src});
+			this.json = this.textContent;
 		}
-		else {
 
-			if(!this.json){
-				this.json = this.textContent;
-			}
+		if(this.copyButton !== 'none'){
 
-			this.loadJSON({raw: this.json});
+			this.#copyButton = new CopyButton({
+				data: () => this.data,
+				icons: {
+					copy: this.getIcon('copy', {clone: true}),
+					copyDone: this.getIcon('copy-done', {clone: true})
+				}
+			});
+
+			this.shadowRoot.append( this.#copyButton.render() );
 		}
+		this.addEventListener("toggle-lines", this.#handletoggleLines);
+
+		this.dispatchEvent(new CustomEvent("ready"));
+		this.setAttribute("ready", "");
 	}
 
   	disconnectedCallback(){
 
-		this.clear();
+		this.#copyButton?.dispose();
+		this.#copyButton = null;
+
+		this.clearJSON();
+
 		this.clearListeners();
 	}
 
   	//MARK: loadJSON
-	async loadJSON(options = {}){
+	async loadJSON(src, options = {}){
 
-		const { src, raw, method,  } = options;
+		const { method, } = options;
 
-		if(src){
-			try {
+		try {
 
-				const response = await fetch(src, {
-					method: method || 'GET',
-				});
+			const response = await fetch(src, {
+				method: method || 'GET',
+			});
 
-				if(response.ok){
+			if(response.ok){
 
-					const result = await response.json();
-					this.json = result;
-	
-					await this.renderJSON(this.json);
-				}
-			} 
-			catch (error) {
-				
+				const result = await response.json();
+
+				this.json = result;
 			}
+		} 
+		catch (error) {
+			
 		}
-		else {
-			this.json = raw;
-
-			await this.renderJSON(this.json);
-		}
-
-		this.dispatchEvent(new CustomEvent("ready"));
-		this.setAttribute("ready", "");
 	}
 
 	//MARK: createJSONLines
@@ -207,39 +237,48 @@ export class JSONVisualizer extends HTMLElement {
 		return lines;
 	}
 	//MARK: RenderJSON
-  	async renderJSON(rawJSON) {
+  	async renderJSON(rawJSON, config = {}) {
 		if (!rawJSON) {
 			console.warn(`No JSON provided to renderJSON method.`);
 			return;
 		}
+
+		console.log('render json');
+
+		this.clearJSON();
+
+		const {
+			lineNumbers = this.lineNumbers !== 'none', 
+			toggleLines = this.toggleLines !== 'none', 
+			renderDeep = this.renderDeep,
+		} = config;
 		
 		//Create Lines
 		const lines = await this.#createJSONLines(rawJSON);
 
 		const blocksStack = [];
-		this.rootBlock = null;
 
 		for(let i = 0; i < lines.length; i++){
 
 			const line = lines.at(i);
 
-			line.showNumber = this.lineNumbers !== 'none';
+			line.showNumber = lineNumbers;
 
 			if(line.isOpenBlock){
 
 				const block = new JSONBlock({
 					level: line.level,
-					showContent: line.level < this.renderDeep
+					showContent: line.level < renderDeep
 				});
 
 				block.openLine = line;
 				line.block = block;
 
-				if(this.toggleLines !== 'none'){
+				if(toggleLines){
 
 					line.toggleControl = true;
 					line.toggleActive = !block.showContent;
-					line.toggleIcon = this.#createIcon("toggle-icon");
+					line.toggleIcon = this.getIcon('toggle', {clone: true});
 				}
 				
 				blocksStack.push(block);
@@ -257,7 +296,7 @@ export class JSONVisualizer extends HTMLElement {
 					blocksStack.at(-1).content.push(block);
 				}
 				else {
-					this.rootBlock = block;
+					this.#rootBlock = block;
 				}
 
 				continue;
@@ -269,19 +308,32 @@ export class JSONVisualizer extends HTMLElement {
 			currentBlock.content.push(line);
 		}
 
-		this.shadowRoot.querySelector(".JSONVisualizer").append( this.rootBlock.render() );
-
-		this.addEventListener("toggle-lines", this.#handletoggleLines);
-
-		if(this.copyButton !== 'none') this.shadowRoot.append( this.#createCopyButton('copy-btn') );
+		this.shadowRoot.querySelector(".JSONVisualizer").append( this.#rootBlock.render() );
+		
+		this.setAttribute('ready-json', '');
+		this.dispatchEvent(new CustomEvent('ready-json'));
   	}
-	#createIcon(name){
+	getIcon(name, {clone = false} = {}){
 
-		const slot = this.shadowRoot.querySelector(`slot[name="${name}"`);
-		const iconTemplate = slot.assignedNodes().at(0) ?? slot.querySelector("template");
-		const icon = iconTemplate.content.cloneNode(true);
+		const slot = this.shadowRoot.querySelector(`slot[name="icons"]`);
 
-		return icon;
+		const defaultIcons = slot.querySelector('template').content;
+		const icons = slot.assignedNodes().at(0)?.content;
+
+		const icon = icons?.querySelector(`[data-name="${name}"]`) ?? defaultIcons.querySelector(`[data-name="${name}"]`);
+
+		return clone ? icon.cloneNode(true) : icon;
+	}
+
+	//MARK: Clear
+	clearJSON(){
+		this.removeAttribute('ready-json');
+		this.#rootBlock?.dispose();
+		this.#rootBlock = null;
+	}
+	clearListeners(){
+
+		this.removeEventListener("toggle-lines", this.#handletoggleLines);
 	}
 
 	//MARK: Toggle Lines
@@ -299,59 +351,27 @@ export class JSONVisualizer extends HTMLElement {
 		}
 	}
 
-	//MARK: Copy Button
-	#createCopyButton(name = 'copy-btn'){
-		
-		const btn = document.createElement("button");
-		btn.classList.add(name);
-
-		btn.append( this.#createIcon("copy-icon") );
-
-		btn.addEventListener("click", this.#handleCopy);
-
-		return btn;
-	}
-	#handleCopy = (e) => {
-
-		navigator.clipboard.writeText(JSON.stringify(this.data, null, 2))
-		.then(() => {
-			this.dispatchEvent(new CustomEvent("copied", { detail: { data: this.data } }));
-			console.log("JSON copied to clipboard");
-		})
-		.catch((error) => {
-			console.error("Failed to copy JSON:", error);
-		});
-	}
-
-	clear(){
-
-		this.rootBlock?.dispose();
-	}
-	clearListeners(){
-
-		this.removeEventListener("toggle-lines", this.#handletoggleLines);
-		this.shadowRoot.querySelector(".copy-btn")?.removeEventListener("click", this.#handleCopy);
-	}
-
 	//MARK: Getters and Setters
 	set json(value) {
 
 		if(value) {
 
-			this.data = typeof value === "string" ? JSON.parse(value) : value;
+			this.#data = typeof value === "string" ? JSON.parse(value) : value;
 		
-			this.setAttribute("json", JSON.stringify(this.data));
+			this.setAttribute("json", JSON.stringify(this.#data));
 		} 
 		else {
 			this.removeAttribute("json");
-			this.data = null;
+			this.#data = null;
 		}
 	}
 	get json() {
 		return this.getAttribute("json");
 	}
+	get data() {
+		return this.#data;
+	}
 
-	
 	set lineNumbers(value) {
 		value ? this.setAttribute("line-numbers", "") : this.removeAttribute("line-numbers");
 	}
@@ -380,6 +400,9 @@ export class JSONVisualizer extends HTMLElement {
 		return this.getAttribute("copy-button");
 	}
 
+	set renderDeep(value){
+		value ? this.setAttribute("render-deep", value) : this.removeAttribute("render-deep");
+	}
 	get renderDeep(){
 
 		const value = this.getAttribute('render-deep');

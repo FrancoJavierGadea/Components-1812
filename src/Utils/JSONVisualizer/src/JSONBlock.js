@@ -15,8 +15,12 @@ export class JSONBlock {
 		this.showContent = showContent;
 	}
 
+	//MARK:Render
 	render(){
-		
+		if(this.#node){
+			this.dispose();
+		}
+
 		this.#node = document.createElement("div");
 		this.node.classList.add(this.className);
 
@@ -54,9 +58,10 @@ export class JSONBlock {
 			fragment.append( this.content.at(i).render() );
 		}
 
-		this.node.querySelector(`.${this.className}-content`).append(fragment);
+		this.node?.querySelector(`.${this.className}-content`).append(fragment);
 	}
 
+	//MARK:Fold and Unfold
 	fold(){
 
 		this.folded = true;
@@ -68,6 +73,7 @@ export class JSONBlock {
 		this.node?.removeAttribute("folded");
 	}
 
+	//MARK:Clear
 	dispose(){
 		this.openLine?.dispose();
 		this.closeLine?.dispose();
@@ -79,6 +85,11 @@ export class JSONBlock {
 		
 		this.#node?.remove();
 		this.#node = null;
+
+		this.openLine = null;
+		this.closeLine = null;
+		this.content = [];
+		this.folded = false;
 	}
 
 	//MARK: Getters

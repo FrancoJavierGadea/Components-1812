@@ -1,7 +1,11 @@
 export class JSONLine {
 
 	#node = null;
+	tokens = [];
+
 	toggleActive = false;
+	toggleIcon = null;
+	#toggleButton = null;
 
 	constructor(params = {}){
 
@@ -25,11 +29,14 @@ export class JSONLine {
 		this.showNumber = showNumber;
 		this.toggleControl = toggleControl;
 		this.toggleIcon = toggleIcon;
-
-		this.tokens = [];
 	}
 
+	//MARK:Render
 	render(){
+		if(this.#node){
+			this.dispose();
+		}
+
 		this.#node = document.createElement("div");
 		this.node.classList.add(this.className);
 
@@ -45,7 +52,7 @@ export class JSONLine {
 
 		for(let i = 0; i < this.tokens.length; i++){
 
-			content.append( this.renderToken(this.tokens.at(i)) );
+			content.append( this.#renderToken(this.tokens.at(i)) );
 		}
 
 		this.node.append(content);
@@ -64,12 +71,12 @@ export class JSONLine {
 		//Render Toggle control
 		if(this.toggleControl && this.isOpenBlock){
 
-			this.node.insertBefore(this.renderToggleControl(), content);
+			this.node.insertBefore(this.#renderToggleControl(), content);
 		}
 
 		return this.node;
 	}
-	renderToken(token = {}){
+	#renderToken(token = {}){
 		const { type, value, tags = [] } = token;
 
 		const span = document.createElement("span");
@@ -82,11 +89,11 @@ export class JSONLine {
 
 		return span;
 	}
-	renderToggleControl(){
+	#renderToggleControl(){
 
-		const button = document.createElement("button");
-		button.classList.add(`${this.className}-toggle-btn`);
-		button.classList.toggle(`active`, this.toggleActive);
+		this.#toggleButton = document.createElement("button");
+		this.#toggleButton.classList.add(`${this.className}-toggle-button`);
+		this.#toggleButton.classList.toggle(`active`, this.toggleActive);
 
 		const icon = document.createElement("span");
 		icon.classList.add(`${this.className}-toggle-icon`);
@@ -100,11 +107,11 @@ export class JSONLine {
 			icon.textContent = "v";
 		}
 
-		button.append(icon);
+		this.#toggleButton.append(icon);
 
-		button.addEventListener("click", this.#handleToggle);
+		this.#toggleButton.addEventListener("click", this.#handleToggle);
 
-		return button;
+		return this.#toggleButton;
 	}
 
 	#handleToggle = (e) => {
@@ -124,13 +131,21 @@ export class JSONLine {
 		}));
 	}
 
+	//MARK:Clear
 	dispose(){
 		this.clearListeners();
 		this.#node?.remove();
 		this.#node = null;
+
+		this.tokens = [];
+		this.toggleIcon = null;
+		this.toggleActive = false;
+		this.isOpenBlock = false;
+		this.isCloseBlock = false;
 	}
 	clearListeners(){
-		this.node?.querySelector(`${this.className}-toggle-btn`)?.removeEventListener("click", this.#handleToggle);
+		this.#toggleButton?.removeEventListener("click", this.#handleToggle);
+		this.#toggleButton = null;
 	}	
 
 	addToken(token = {}){

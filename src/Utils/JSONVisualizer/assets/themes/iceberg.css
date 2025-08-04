@@ -15,11 +15,11 @@ custom-json-visualizer.iceberg {
     --json-comma: #88aacc;
     --json-colon: #88aacc;
 
-    --copy-btn-color: #5588aa;
-    --copy-btn-hover-color: #0a1e2b;
+    --copy-button-color: #5588aa;
+    --copy-button-hover-color: #0a1e2b;
 
-    --toggle-btn-color: #5588aa;
-    --toggle-btn-hover-color: #0a1e2b;
+    --toggle-button-color: #5588aa;
+    --toggle-button-hover-color: #0a1e2b;
 
     --line-number-color: #aaccee;
     --line-number-background: transparent;

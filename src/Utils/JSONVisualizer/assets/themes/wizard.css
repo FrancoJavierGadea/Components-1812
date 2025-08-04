@@ -15,11 +15,11 @@ custom-json-visualizer.wizard {
   --json-comma: #d4d4d4;
   --json-colon: #d4d4d4;
 
-  --copy-btn-color: #aa88cc;
-  --copy-btn-hover-color: #ffffff;
+  --copy-button-color: #aa88cc;
+  --copy-button-hover-color: #ffffff;
 
-  --toggle-btn-color: #aa88cc;
-  --toggle-btn-hover-color: #ffffff;
+  --toggle-button-color: #aa88cc;
+  --toggle-button-hover-color: #ffffff;
 
   --line-number-color: #715d8a;
   --line-number-background: transparent;

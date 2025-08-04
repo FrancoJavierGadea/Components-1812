@@ -51,34 +51,40 @@
                 "active": true
             }
 
-            <template slot="toggle-icon">
-                <span>🔽</span>
+            <template slot="icons">
+                <span data-name="toggle">🔽</span>
+                <span data-name="copy">📋</span>
+                <span data-name="copy-done">✅</span>
             </template>
 
-            <template slot="copy-icon">
-                <span>📋</span>
-            </template>
         </custom-json-visualizer>
     </section>
 
     <script type="module">
-        import JSONVisualizer from '../src/JSONVisualizer.js';
-        import JSONTokenizer from '../src/JSONTokenizer.js';
+        const mode = 'development';
 
-        //Load the stylesheet
-        JSONVisualizer.stylesSheets.links.push('../src/JSONVisualizer.css');
-
-        //Define JSON Tokenizer
-        JSONVisualizer.getTokens = (rawJson) => {
-
-            const tokenizer = new JSONTokenizer(); 
-
-            tokenizer.tokenize(rawJson);
-
-            return tokenizer.tokens;
+        const SOURCES = {
+            development: {
+                JSONVisualizer: '../src/JSONVisualizer.js',
+                JSONVisualizerCSS: '../src/JSONVisualizer.css'
+            },
+            production: {
+                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.js",
+                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.css'
+            }
         }
 
+        const [{JSONVisualizer}] = await Promise.all([
+            import(SOURCES[mode].JSONVisualizer)
+        ]);
+        const JSONVisualizerCSS = SOURCES[mode].JSONVisualizerCSS;
+
+        console.log('MODE:', mode);
         console.log(JSONVisualizer);
+        console.log(JSONVisualizerCSS);
+
+        //Load the stylesheet
+        JSONVisualizer.stylesSheets.links.push(JSONVisualizerCSS);
 
         customElements.define('custom-json-visualizer', JSONVisualizer);
     </script>
