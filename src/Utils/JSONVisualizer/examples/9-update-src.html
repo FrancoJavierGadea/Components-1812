@@ -59,14 +59,12 @@
                 JSONVisualizerCSS: '../src/JSONVisualizer.css'
             },
             production: {
-                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.js",
-                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.css'
+                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js",
+                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.css'
             }
         }
 
-        const [{JSONVisualizer}] = await Promise.all([
-            import(SOURCES[mode].JSONVisualizer)
-        ]);
+        const {JSONVisualizer} = await import(SOURCES[mode].JSONVisualizer);
         const JSONVisualizerCSS = SOURCES[mode].JSONVisualizerCSS;
 
         console.log('MODE:', mode);

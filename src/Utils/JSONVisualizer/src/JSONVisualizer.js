@@ -16,6 +16,12 @@ export class JSONVisualizer extends HTMLElement {
 		raw: [],
 	};
 
+	/**
+	 * Asynchronous function that tokenizes a JSON string.
+	 * @async
+	 * @param {string} rawJson - The input JSON string.
+	 * @returns {Promise<Array<import("./JSONTokenizer.js").Token>>} Array of tokens.
+	 */
  	static getTokens = async (rawJson) => {
 
         const tokenizer = new JSONTokenizer(); 
@@ -309,6 +315,12 @@ export class JSONVisualizer extends HTMLElement {
 		}
 
 		this.shadowRoot.querySelector(".JSONVisualizer").append( this.#rootBlock.render() );
+
+		//Line number width
+		if(lineNumbers){
+			const minWidth = `${String(lines.length).length}ch`;
+			this.shadowRoot.querySelector(".JSONVisualizer").style.setProperty("--line-number-min-width", minWidth);
+		}
 		
 		this.setAttribute('ready-json', '');
 		this.dispatchEvent(new CustomEvent('ready-json'));
@@ -386,11 +398,11 @@ export class JSONVisualizer extends HTMLElement {
 		return this.getAttribute("toggle-lines");
 	}
 
-	set indentationGuideLines(value) {
-		value ? this.setAttribute("indentation-guide-lines", "") : this.removeAttribute("indentation-guide-lines");
+	set indentationGuidesLines(value) {
+		value ? this.setAttribute("indentation-guides-lines", "") : this.removeAttribute("indentation-guides-lines");
 	}
-	get indentationGuideLines() {
-		return this.getAttribute("indentation-guide-lines");
+	get indentationGuidesLines() {
+		return this.getAttribute("indentation-guides-lines");
 	}
 
 	set copyButton(value) {

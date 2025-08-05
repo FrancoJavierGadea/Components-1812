@@ -1,12 +1,20 @@
 # JSON Visualizer custom element
 
-<br>
+![](./assets/preview-2.webp)
 
 ## Examples
 
-- **Codepen**: 
-[Example 1](https://codepen.io/FrancoJavierGadea/pen/MYwNLWd)
-[Example 2](https://codepen.io/FrancoJavierGadea/pen/jEPgdyR)
+- [**Codepen**](https://codepen.io/collection/JYEwMK): 
+[`Overview`](https://codepen.io/FrancoJavierGadea/pen/YPyVZMo)
+[`json attribute`](https://codepen.io/FrancoJavierGadea/pen/EaVmWze)
+[`custom icons`](https://codepen.io/FrancoJavierGadea/pen/KwdmWjv)
+[`render deep`](https://codepen.io/FrancoJavierGadea/pen/ZYbKedr)
+[`Changing themes`](https://codepen.io/FrancoJavierGadea/pen/WbQjpWR)
+[`src attribute`](https://codepen.io/FrancoJavierGadea/pen/qEOmrzg)
+
+- [**Stackblitz**]()
+[Overview](https://stackblitz.com/edit/vitejs-vite-uplxn9zh?file=index.html)
+
 
 <br>
 
@@ -18,16 +26,16 @@
 npm install @components-1812/json-visualizer
 ```
 
-- [`SVG Isolate package`](https://www.jsdelivr.com/package/npm/@components-1812/json-visualizer)
+- [`JSON visualizer package`](https://www.npmjs.com/package/@components-1812/json-visualizer)
 
 #### CDN
 
 ```html
 <script type="module">
-    import JSONVisualizer from 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.js';
+    import JSONVisualizer from 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js';
 
     //Load the stylesheet
-    JSONVisualizer.stylesSheets.links.push('https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.css');
+    JSONVisualizer.stylesSheets.links.push('https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.css');
 
     console.log(JSONVisualizer);
 
@@ -35,13 +43,15 @@ npm install @components-1812/json-visualizer
 </script>
 ```
 
-- **jsdelivr**: [`SVG Isolate package`](https://www.jsdelivr.com/package/npm/@components-1812/svg-isolate)
-[`SVGIsolate.js`](https://cdn.jsdelivr.net/npm/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.min.js)
-[`SVGIsolate.css`](https://cdn.jsdelivr.net/npm/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.min.css)
+- **jsdelivr**: [`JSON visualizer package`](https://www.jsdelivr.com/package/npm/@components-1812/json-visualizer)
+[`JSONVisualizer.js`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js)
+[`JSONVisualizer.css`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.css)
+[`JSONTokenizer.js`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONTokenizer.js)
 
-- **unpkg**: [`SVG Isolate package`](https://app.unpkg.com/@components-1812/svg-isolate)
-[`SVGIsolate.js`](https://unpkg.com/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.js)
-[`SVGIsolate.css`](https://unpkg.com/@components-1812/svg-isolate@0.0.1/src/SVGIsolate.css)
+- **unpkg**: [`JSON visualizer package`](https://app.unpkg.com/@components-1812/json-visualizer)
+[`JSONVisualizer.js`](https://unpkg.com/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.js)
+[`JSONVisualizer.css`](https://unpkg.com/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.css)
+[`JSONTokenizer.js`](https://unpkg.com/@components-1812/json-visualizer@0.0.1/src/JSONTokenizer.js)
 
 <br>
 
@@ -50,17 +60,33 @@ npm install @components-1812/json-visualizer
 If you use Vite or a framework based on Vite such as Astro, you can import the component in a client-side script file:
 
 ```js
-import '@components-1812/svg-isolate';
+import '@components-1812/json-visualizer';
 ```
 
 and use it in your HTML:
 
 ```html
 <custom-svg-isolate>
-    <svg width="200" height="200"><!-- SVG content --></svg>
+    {
+        "name": "John Doe",
+        "age": null,
+        "isStudent": false,
+        "courses": ["Math", "Science"],
+        "address": {
+            "street": "123 Main St",
+            "city": "Anytown"
+        },
+        "grades": [ 85, 92, 78 ],
+        "contact": {
+            "email": "john.doe@example.com",
+            "phone": "123-456-7890"
+        }
+    }
 </custom-svg-isolate>
 
-<custom-svg-isolate src="path/tocircle.svg"></custom-svg-isolate>
+<custom-json-visualizer json='{"name": "John Doe", "age": null}'></custom-json-visualizer>
+
+<custom-json-visualizer src="https://jsonplaceholder.typicode.com/todos/1"></custom-json-visualizer>
 ```
 
 > **Note:**
@@ -76,74 +102,95 @@ and use it in your HTML:
 
 If you want to add custom stylesheets to the component or need to load stylesheets from a different path, you can do it like this:
 
-- Using your builder’s import raw method, `CSSStyleSheet`, and the component’s `AdoptedStyleSheets` property:
+- ### AdoptedStyleSheets (recommended)
+
+    Using your builder’s import raw method, `CSSStyleSheet`, and the component’s `AdoptedStyleSheets` property:
 
     ```js
-    import { SVGIsolate } from '@components-1812/svg-isolate/SVGIsolate.js';
-    import SVGIsolateRawCSS from '@components-1812/svg-isolate/SVGIsolate.css?raw';
-
-    const SVGIsolateCSS = new CSSStyleSheet();
-    SVGIsolateCSS.replaceSync(SVGIsolateRawCSS);
+    import JSONVisualizer from "@components-1812/json-visualizer/JSONVisualizer.js";
+    import JSONVisualizerRawCSS from "@components-1812/json-visualizer/JSONVisualizer.css?raw";
 
     //Add the stylesheets to the component
-    SVGIsolate.stylesSheets.adopted.push(SVGIsolateCSS);
+    const JSONVisualizerCSS = new CSSStyleSheet();
+
+    JSONVisualizerCSS.replaceSync(JSONVisualizerRawCSS);
+
+    JSONVisualizer.stylesSheets.adopted.push(JSONVisualizerCSS);
 
     //Define the component
-    import('@components-1812/svg-isolate/define');
+    import('@components-1812/json-visualizer/define');
     ```
 
-<br>
+- ### Raw CSS in a `<style>` tag
 
-- Using a `<style>` tag inside the shadow root of the component:
+    Using a `<style>` tag inside the shadow root of the component:
 
     ```js
-    import { SVGIsolate } from '@components-1812/svg-isolate/SVGIsolate.js';
-    import SVGIsolateRawCSS from '@components-1812/svg-isolate/SVGIsolate.css?raw';
+    import JSONVisualizer from "@components-1812/json-visualizer/JSONVisualizer.js";
+    import JSONVisualizerRawCSS from "@components-1812/json-visualizer/JSONVisualizer.css?raw";
 
     //Add the stylesheets to the component
-    SVGIsolate.stylesSheets.raw.push(SVGIsolateRawCSS);
+    JSONVisualizer.stylesSheets.raw.push(JSONVisualizerCSS);
 
     //Define the component
-    import('@components-1812/svg-isolate/define');
+    import('@components-1812/json-visualizer/define');
     ```
 
-<br>
+- ### External CSS files in a `<link>` tag
 
-- Using a `<link>` tag inside the shadow root of the component:
+    Using a `<link>` tag inside the shadow root of the component:
 
     ```js
-    import { SVGIsolate } from '@components-1812/svg-isolate/SVGIsolate.js';
-    import SVGIsolateUrl from '@components-1812/svg-isolate/SVGIsolate.css?url';
+    import JSONVisualizer from "@components-1812/json-visualizer/JSONVisualizer.js";
+    import JSONVisualizerCSS from "@components-1812/json-visualizer/JSONVisualizer.css?url";
 
     //Add the stylesheets to the component
-    SVGIsolate.stylesSheets.links.push(SVGIsolateUrl);
+    JSONVisualizer.stylesSheets.links.push(JSONVisualizerCSS);
 
     //Define the component
-    import('@components-1812/svg-isolate/define');
+    import('@components-1812/json-visualizer/define');
     ```
-
-<br>
 
 > **Note:**
 > 
-> `import('@components-1812/svg-isolate/define')` calls `customElements.define('custom-svg-isolate', SVGIsolate);` in `define.js`
+> `import('@components-1812/json-visualizer/define')` calls `customElements.define('custom-json-visualizer', JSONVisualizer);` in `define.js`
 
+<br>
 
-## CSS Variables
+## Customization
+
+### CSS variables
 
 ```css
 --line-height: 1.25;
 --line-elements-gap: 5px;
 --line-white-space: normal;
 --font: Consolas, "Courier New", monospace, sans-serif;
-```
 
-```css
+--line-number-padding: 5px;
+--line-number-color: #777;
+--line-number-background: transparent;
+--line-number-text-align: right;
+--line-number-width: fit-content;
+--line-number-min-width: 2ch;/* Set by JS according to JSON line count */
+
+--toggle-button-width: 15px;
+--toggle-button-color: #777;
+--toggle-button-hover-color: #fff;
+--toggle-button-padding: 0;
+
+--copy-button-width: 40px;
+--copy-button-height: 40px;
+--copy-button-color: #777;
+--copy-button-hover-color: #fff;
+--copy-button-padding: 10px;
+
+--indentation-guides-lines-color: #444;
+--indentation-guides-lines-width: 1px;
+    
 --json-tab-size: 4ch;
-```
 
-#### Tokens theme colors
-```css
+/* Theme Colors */
 --json-background: #222;
 --json-foreground: #eee;
 
@@ -159,80 +206,229 @@ If you want to add custom stylesheets to the component or need to load styleshee
 --json-colon: #d4d4d4; 
 ```
 
-#### Line Numbers
+### Themes 
 
-```css
---line-numbers-padding: 5px;
---line-numbers-color: #777;
---line-numbers-background: transparent;
---line-numbers-text-align: right;
---line-numbers-width: 2ch;
+You can use one of the existing themes located in the assets/themes folder.
+
+Example with Vite (or other bundlers):
+
+```js
+import "@components-1812/json-visualizer/assets/themes/nord.css"
 ```
 
-#### Indentation Guides
+Example with CDN:
 
-```css
---indentation-guides-lines-color: #444;
---indentation-guides-lines-width: 1px;
+```html
+<link rel="stylesheet" href="https://unpkg.com/@components-1812/json-visualizer@0.0.2/assets/themes/dracula.css">
 ```
 
-#### Copy button
+Then apply the theme by using the corresponding class name:
 
-```css
---copy-button-width: 40px;
---copy-button-height: 40px;
---copy-button-color: #777;
---copy-button-hover-color: #fff;
---copy-button-padding: 10px;
+```html
+<custom-json-visualizer class="dracula"></custom-json-visualizer>
+<custom-json-visualizer class="nord"></custom-json-visualizer>
 ```
 
-#### Toggle Lines buttons
+> **Note:**
+>
+> All themes are based on the default `<custom-json-visualizer>` tag name.
+>
+> If you register the custom element under a different name, you’ll need to adjust the theme’s CSS selectors accordingly.
 
-```css
---toggle-button-width: 15px;
---toggle-button-color: #777;
---toggle-button-hover-color: #fff;
---toggle-button-padding: 0;
+Show all available themes in this example: [Changing themes](https://codepen.io/FrancoJavierGadea/pen/WbQjpWR)
+
+### Custom icons
+
+If you want to add your own icons to the component, you can do it like this:
+
+Use a `<template>` tag with the slot="icons" attribute, and assign a data-name to each icon using one of the following values: toggle, copy, or copy-done.
+
+```html
+<custom-json-visualizer>
+    {
+        "name": "John Doe",
+        "age": null,
+        "isStudent": false,
+        "courses": ["Math", "Science"],
+    }
+    <template slot="icons">
+        <span data-name="toggle">🔽</span>
+        <span data-name="copy">📋</span>
+        <span data-name="copy-done">✅</span>
+    </template>
+</custom-json-visualizer>
 ```
+> **Note:**
+>
+> You can retrieve icons using the `getIcon(name)` method.
+>
+> To get a cloned copy of the icon instead of a reference, use `getIcon(name, { clone: true })`.
 
+### Custom tokenizer
+
+The default tokenizer in [`JSONTokenizer.js`](./src/JSONTokenizer.js) has been tested a lot (see [tests](./test/)) and works well with any valid JSON input.
+
+However, if you prefer to use your own tokenizer, you can override the default behavior via `JSONVisualizer.getTokens`:
+
+```js
+import JSONVisualizer from "@components-1812/json-visualizer";
+
+JSONVisualizer.getTokens = async (rawJson) => {
+
+    return [];//[{type, value, tags}, ...]
+}
+```
+Each token should follow this structure:
+```ts
+type Token = {
+    type:'brace-open' | 'brace-close' | 'bracket-open' | 'bracket-close' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null',
+    value:string | boolean | number | null,
+    tags:Array<'brace' | 'bracket' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null' | 'open' | 'close' | 'key' | 'value' | 'array-value'>,
+}
+```
+> **Note:**
+>
+> The `type` property is required for the JSON to render correctly.
+>
+> The `tags` array is used for syntax highlighting.
+
+Aqui puedes ver un ejemplo usando `babel-standalone`: [custom tokenizer](https://codepen.io/FrancoJavierGadea/pen/RNWVpXw)
+
+<br><br>
 
 ## Attributes
 
 #### Reactive attributes
 
-- `src`: url to requests a json file.
+- `src`: URL used to fetch a JSON file.
 
-    At init time, if the `src` attribute is not set `json` attribute or textContent is used.
+    If the src attribute is not set, the component will use either the json attribute or its textContent during initialization.
 
-- `json`: A raw json
+- `json`: A raw JSON string to render directly.
 
-- `line-numbers`: render and show line numbers, set to `"none"` for hide
+#### Non reactive atributes
 
-- `toggle-lines`: render and show toogle lines buttons, set to `"none"` for hide
+- `line-numbers`:  Controls whether line numbers are rendered. Set to `"none"` to hide them.
 
-- `indentation-guides-lines`: show indentation guides lines, set to `"none"` for hide
+- `toggle-lines`: Controls whether toggle buttons for collapsible sections are shown. Set to `"none"` to hide them.
 
-- `copy-button`: render and show copy button, set to `"none"` for hide
+- `indentation-guides-lines`: Shows indentation guide lines. Set to `"none"` to hide them.
 
+- `copy-button`: Controls whether the copy button are rendered. Set to `"none"` to hide it.
 
+- `render-deep` default: `Infinity`: Limits the initial rendering depth for deeply nested JSON. Any non-numeric value is treated as `Infinity`. 
 
+    Deeper levels will only be rendered when expanded by the user.
 
 
 #### Ready attributes
 
-- `ready`: Set when the component is ready, at the last of `connectedCallback()`
-- `ready-links`: Set when the links added by `JSONVisualizer.stylesSheets.links` are loaded
-- `ready-json`: Set when the json are loaded and rendered succefully
+- `ready`: Set when the component is fully initialized (at the end of `connectedCallback()`).
 
+- `ready-links`: Set when external stylesheets from `JSONVisualizer.stylesSheets.links` have finished loading.
 
+- `ready-json`: Set when the JSON has been successfully loaded and rendered.
 
 <br>
+
+## Properties
+
+#### Mirrors of Attributes
+
+These properties reflect the corresponding HTML attributes:
+
+- `json` (reactive): A raw JSON string to render. Updating this will trigger a re-render.
+
+- `src` (reactive): A URL to fetch a JSON file. Updating this will also trigger a re-render.
+
+- `lineNumbers`: Controls whether line numbers are shown. Use "none" to hide them.
+
+- `toggleLines`: Controls whether toggle buttons are shown.
+
+- `indentationGuidesLines`: Controls the visibility of indentation guide lines.
+
+- `copyButton`: Controls the visibility of the copy button.
+
+#### Other
+
+- `data` (readonly): Returns the parsed result of the current `json` value (`JSON.parse(json)`). If parsing fails, returns `null`.
+
+<br>
+
+## Methods
+
+- `async renderJSON(raw, options?)`
+
+    Clears the currently rendered JSON and renders the new one using the given options.
+
+    raw can be a string or parsed object.
+
+- `clearJSON()`
+
+    Clears the currently rendered JSON content.
+
+- `async loadJSON(url, options?)`
+
+    Fetches a JSON file from the specified URL and renders it using the given options.
+
+- `getIcon(name, { clone = false })` 
+
+    Retrieves one of the internal icons used for the toggle or copy buttons.
+
+    Valid `name` values: "toggle", "copy", "copy-done".
+
+    Pass `{ clone: true }` to get a cloned copy of the icon instead of a reference.
+
+- `clearListeners()`
+
+    Removes all internal event listeners used by the component.
+
+
+## Events
+
+- `ready`:  Fired when the component has finished initializing (at the end of `connectedCallback()`).
+
+- `ready-links`: Fired when the stylesheets defined in `JSONVisualizer.stylesSheets.links` are loaded.
+
+    ```js
+    document.querySelector('custom-json-visualizer').addEventListener('ready-links', (e) => {
+
+        const {results} = e.detail;
+
+        console.log(results);//[{link:HTMLLinkElement, href:string, status:'loaded' | 'error'}, ...]
+    });
+    ```
+
+- `ready-json`: Fired when the JSON has been successfully loaded and rendered.
+
+- `copy-done`: Fired when the copy button is clicked and the JSON data has been copied to the clipboard.
+
+    ```js
+    document.querySelector('custom-json-visualizer').addEventListener('copy-done', (e) => {
+
+        const {data} = e.detail;
+    });
+    ```
+
+<br>
+
+## JSONTokenizer 
+
+```js
+import JSONTokenizer from '@components-1812/json-visualizer/JSONTokenizer.js';
+
+const tokenizer = new JSONTokenizer(); 
+
+tokenizer.tokenize(rawJson);
+
+console.log(tokenizer.tokens);//[{type, value, tags}, ...]
+```
 
 ## License
 
 This package is distributed under the [MIT license](./LICENSE).
 
-### Credits
+## Credits
 
 Default icons used in this package are sourced from the [Bootstrap Icons](https://icons.getbootstrap.com/) project, licensed under the MIT license.  
 © 2019–2024 The Bootstrap Authors 

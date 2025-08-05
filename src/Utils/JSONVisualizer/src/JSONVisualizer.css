@@ -1,3 +1,7 @@
+/*
+    JSONVisualizer.css
+    version: 0.0.2
+*/
 :host {
     display: block;
     width: 100%;
@@ -13,7 +17,8 @@
     --line-number-color: #777;
     --line-number-background: transparent;
     --line-number-text-align: right;
-    --line-number-width: 2ch;
+    --line-number-width: fit-content;
+    --line-number-min-width: 2ch;/* Set by JS according to JSON line count */
 
     --toggle-button-width: 15px;
     --toggle-button-color: #777;
@@ -46,6 +51,7 @@
     --json-comma: #d4d4d4;         
     --json-colon: #d4d4d4;   
 }
+/* JSON */
 :host .JSONVisualizer {
     min-height: 100%;
     background-color: var(--json-background);
@@ -58,6 +64,7 @@
         gap: var(--line-elements-gap);
 
         .json-line-number {
+            min-width: var(--line-number-min-width);
             width: var(--line-number-width);
             flex-grow: 0;
             flex-shrink: 0;
@@ -172,7 +179,7 @@
     background-image: none;
 }
 
-
+/* Copy button */
 :host .copy-button {
     display: grid;
     grid-template-columns: 1fr;

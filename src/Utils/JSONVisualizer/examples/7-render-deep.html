@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSONVisualizer example 7</title>
+    <title>7 - render deep</title>
 
     <style>
         body, html {
@@ -15,7 +15,8 @@
         }
         body {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             gap: 50px;
         }
@@ -34,24 +35,6 @@
     </style>
 </head>
 <body>
-
-    <section>
-        <custom-json-visualizer>
-            {
-                "name": "John Doe",
-                "age": 30,
-                "isStudent": false,
-                "isTeacher": true,
-                "currentWork": null,
-                "courses": ["Math", "Science"],
-                "address": {
-                    "street": "123 Main St",
-                    "city": "Anytown"
-                },
-                "grades": [ 85, 92, 78 ]
-            }
-        </custom-json-visualizer>
-    </section>
 
     <section>
         <custom-json-visualizer render-deep="3">
@@ -102,8 +85,6 @@
             }
         </custom-json-visualizer>
     </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.28.2/babel.min.js"></script>
     
     <script type="module">
 
@@ -112,74 +93,20 @@
         const SOURCES = {
             development: {
                 JSONVisualizer: '../src/JSONVisualizer.js',
-                JSONVisualizerCSS: '../src/JSONVisualizer.css',
+                JSONVisualizerCSS: '../src/JSONVisualizer.css'
             },
             production: {
-                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.js",
-                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.css'
+                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js",
+                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.css'
             }
         }
 
-        const [{JSONVisualizer}] = await Promise.all([
-            import(SOURCES[mode].JSONVisualizer),
-        ]);
+        const {JSONVisualizer} = await import(SOURCES[mode].JSONVisualizer);
         const JSONVisualizerCSS = SOURCES[mode].JSONVisualizerCSS;
 
         console.log('MODE:', mode);
         console.log(JSONVisualizer);
         console.log(JSONVisualizerCSS);
-        console.log(window.Babel);
-
-        //Define JSON Tokenizer
-        JSONVisualizer.getTokens = async (rawJson) => {
-
-            const {parse} = Babel.packages.parser;
-            console.log(parse);
-
-            const tokenizer = parse(`(${rawJson})`, { tokens: true });
-
-            const result = tokenizer.tokens.slice(1, -2);
-
-            const tokens = [];
-            
-            for (let i = 0; i < result.length; i++) {
-
-                const {type, value} = result[i];
-                
-                if(type.label === '{'){
-                    tokens.push({type: 'brace-open', value: '{', tags: ['brace']});
-                }
-                if(type.label === '}'){
-                    tokens.push({type: 'brace-close', value: '}', tags: ['brace']});
-                }
-                if(type.label === '['){
-                    tokens.push({type: 'bracket-open', value: '[', tags: ['bracket']});
-                }
-                if(type.label === ']'){
-                    tokens.push({type: 'bracket-close', value: ']', tags: ['bracket']});
-                }
-                if(type.label === ':'){
-                    tokens.push({type: 'colon', value: ':', tags: ['colon']});
-                }
-                if(type.label === ','){
-                    tokens.push({type: 'comma', value: ',', tags: ['comma']});
-                }
-                if(type.label === 'string'){
-                    tokens.push({type: 'string', value: `"${value}"`, tags: ['string']});
-                }
-                if(type.label === 'num'){
-                    tokens.push({type: 'number', value: value, tags: ['number']});
-                }
-                if(type.label === 'false' || type.label === 'true'){
-                    tokens.push({type: 'boolean', value: value, tags: ['boolean']});
-                }
-                if(type.label === 'null'){
-                    tokens.push({type: 'null', value: 'null', tags: ['null']});
-                }
-            }
-
-            return tokens;
-        }
 
         //Load the stylesheet
         JSONVisualizer.stylesSheets.links.push(JSONVisualizerCSS);

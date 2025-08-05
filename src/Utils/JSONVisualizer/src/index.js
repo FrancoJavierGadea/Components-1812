@@ -1,26 +1,15 @@
 import JSONVisualizer from "./JSONVisualizer.js";
 import JSONVisualizerRawCSS from "./JSONVisualizer.css?raw";
-import JSONTokenizer from "./JSONTokenizer.js";
 
+const VERSION = "0.0.2";
 const TAG_NAME = 'custom-json-visualizer';
 
 //Add styles
-const JSONVisualizerCSS = new StyleSheet();
+const JSONVisualizerCSS = new CSSStyleSheet();
 
 JSONVisualizerCSS.replaceSync(JSONVisualizerRawCSS);
 
 JSONVisualizer.stylesSheets.adopted.push(JSONVisualizerCSS);
-
-//Define JSON Tokenizer
-JSONVisualizer.getTokens = (rawJson) => {
-
-    const tokenizer = new JSONTokenizer(); 
-
-    tokenizer.tokenize(rawJson);
-
-    return tokenizer.tokens;
-}
-
 
 //Define the custom element
 if(!customElements.get(TAG_NAME)){
@@ -32,5 +21,5 @@ else {
     console.warn(`Custom element with tag name "${TAG_NAME}" is already defined.`);
 }
 
-export {JSONVisualizer, TAG_NAME}
+export {JSONVisualizer, TAG_NAME, VERSION}
 export default JSONVisualizer;

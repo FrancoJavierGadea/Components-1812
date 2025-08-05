@@ -1,5 +1,6 @@
 import JSONVisualizer from "./JSONVisualizer.js";
 
+const VERSION = "0.0.2";
 const TAG_NAME = 'custom-json-visualizer';
 
 //Define the custom element
@@ -12,5 +13,5 @@ else {
     console.warn(`Custom element with tag name "${TAG_NAME}" is already defined.`);
 }
 
-export {JSONVisualizer, TAG_NAME}
+export {JSONVisualizer, TAG_NAME, VERSION}
 export default JSONVisualizer;

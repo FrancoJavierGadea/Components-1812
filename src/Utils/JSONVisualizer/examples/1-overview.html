@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSONVisualizer example 1</title>
+    <title>JSONVisualizer examples</title>
 
     <style>
         body, html {
@@ -15,18 +15,21 @@
         }
         body {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             gap: 50px;
         }
 
         section {
             width: 400px;
-            height: 400px;
             margin: 0 auto;
             border: 1px solid rgb(141, 11, 11);
             overflow: hidden;
             resize: both;
+        }
+        custom-json-visualizer:not([ready-links]) {
+            display: none;
         }
     </style>
 </head>
@@ -79,46 +82,28 @@
     </section>
 
     <script type="module">
-        const mode = 'production';
+        const mode = 'development';
 
         const SOURCES = {
             development: {
                 JSONVisualizer: '../src/JSONVisualizer.js',
-                JSONTokenizer: '../src/JSONTokenizer.js',
                 JSONVisualizerCSS: '../src/JSONVisualizer.css'
             },
             production: {
-                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.js",
-                JSONTokenizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONTokenizer.min.js",
-                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.min.css'
+                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js",
+                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.css'
             }
         }
 
-        const [{JSONVisualizer}, {JSONTokenizer}] = await Promise.all([
-            import(SOURCES[mode].JSONVisualizer),
-            import(SOURCES[mode].JSONTokenizer)
-        ]);
+        const {JSONVisualizer} = await import(SOURCES[mode].JSONVisualizer);
         const JSONVisualizerCSS = SOURCES[mode].JSONVisualizerCSS;
 
         console.log('MODE:', mode);
         console.log(JSONVisualizer);
-        console.log(JSONTokenizer);
         console.log(JSONVisualizerCSS);
 
         //Load the stylesheet
         JSONVisualizer.stylesSheets.links.push(JSONVisualizerCSS);
-
-        //Define JSON Tokenizer
-        JSONVisualizer.getTokens = (rawJson) => {
-
-            const tokenizer = new JSONTokenizer(); 
-
-            tokenizer.tokenize(rawJson);
-
-            return tokenizer.tokens;//[{type, value, tags}]
-        }
-
-        console.log(JSONVisualizer);
 
         customElements.define('custom-json-visualizer', JSONVisualizer);
     </script>

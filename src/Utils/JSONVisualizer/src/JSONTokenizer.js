@@ -1,12 +1,24 @@
+/**
+ * @typedef {Object} Token
+ *  @property {'brace-open' | 'brace-close' | 'bracket-open' | 'bracket-close' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null'} type
+ *     The specific type of the token, representing different JSON syntax elements.
+ *  @property {string | boolean | number | null} value
+ *     The actual value of the token. This can be any data type.
+ *  @property {Array<'brace' | 'bracket' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null' | 'open' | 'close' | 'key' | 'value' | 'array-value'>} tags
+ *     A list of additional tags that describe the token's role or category.
+ */
 
 
 export class JSONTokenizer {
 
     static version = "0.0.2";
 
-    constructor(){
-        this.tokens = [];
-    }
+    /**
+     * @type {Token[]}
+     */
+    tokens = [];
+
+    constructor(){}
 
     //MARK: tokenize
     /**
