@@ -3,26 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4 - Indentation guides lines</title>
+    <title>12 - detect colors</title>
 
     <style>
-        body, html {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
             height: 100%;
             width: 100%;
             background-color: black;
         }
         body {
-            display: flex;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-            gap: 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         section {
-            width: 400px;
-            height: 480px;
+            min-width: 0;
+            min-height: 0;
+            width: 100%;
             margin: 0 auto;
             border: 1px solid rgb(141, 11, 11);
             overflow: hidden;
@@ -33,43 +36,44 @@
 <body>
 
     <section>
-        <custom-json-visualizer style="--indentation-guides-lines-color: #f124f1">
+        <custom-json-visualizer class="contain" colors="">
             {
-                "name": "John Doe",
-                "age": null,
-                "isStudent": false,
-                "courses": ["Math", "Science"],
-                "address": {
-                    "street": "123 Main St",
-                    "city": "Anytown"
-                },
-                "grades": [ 85, 92, 78 ],
-                "contact": {
-                    "email": "john.doe@example.com",
-                    "phone": "123-456-7890"
-                },
-                "active": true
-            }
-        </custom-json-visualizer>
-    </section>
-
-    <section>
-        <custom-json-visualizer indentation-guides-lines="none">
-            {
-                "name": "John Doe",
-                "age": null,
-                "isStudent": false,
-                "courses": ["Math", "Science"],
-                "address": {
-                    "street": "123 Main St",
-                    "city": "Anytown"
-                },
-                "grades": [ 85, 92, 78 ],
-                "contact": {
-                    "email": "john.doe@example.com",
-                    "phone": "123-456-7890"
-                },
-                "active": true
+                "hex": [
+                    "#000",
+                    "#1a2b3c",
+                    "#f0f",
+                    "#abcd",
+                    "#11223344"
+                ],
+                "rgb": [
+                    "rgb(255, 99, 71)",
+                    "rgb(0, 128, 0)",
+                    "rgb(30, 144, 255)"
+                ],
+                "rgba": [
+                    "rgba(255, 99, 71, 1)",
+                    "rgba(0, 128, 0, 0.5)",
+                    "rgba(30, 144, 255, 0.75)"
+                ],
+                "hsl": [
+                    "hsl(0, 100%, 50%)",
+                    "hsl(120, 60%, 70%)",
+                    "hsl(240, 100%, 50%)"
+                ],
+                "hsla": [
+                    "hsla(0, 100%, 50%, 1)",
+                    "hsla(120, 60%, 70%, 0.4)",
+                    "hsla(240, 100%, 50%, 0.75)"
+                ],
+                "named": [
+                    "red",
+                    "green",
+                    "blue",
+                    "black",
+                    "white",
+                    "transparent",
+                    "rebeccapurple"
+                ]
             }
         </custom-json-visualizer>
     </section>

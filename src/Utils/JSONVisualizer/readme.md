@@ -12,7 +12,7 @@
 [`Changing themes`](https://codepen.io/FrancoJavierGadea/pen/WbQjpWR)
 [`src attribute`](https://codepen.io/FrancoJavierGadea/pen/qEOmrzg)
 
-- [**Stackblitz**]()
+- [**Stackblitz**]():
 [Overview](https://stackblitz.com/edit/vitejs-vite-uplxn9zh?file=index.html)
 
 
@@ -32,10 +32,10 @@ npm install @components-1812/json-visualizer
 
 ```html
 <script type="module">
-    import JSONVisualizer from 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js';
+    import JSONVisualizer from 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.min.js';
 
     //Load the stylesheet
-    JSONVisualizer.stylesSheets.links.push('https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.css');
+    JSONVisualizer.stylesSheets.links.push('https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.min.css');
 
     console.log(JSONVisualizer);
 
@@ -44,14 +44,14 @@ npm install @components-1812/json-visualizer
 ```
 
 - **jsdelivr**: [`JSON visualizer package`](https://www.jsdelivr.com/package/npm/@components-1812/json-visualizer)
-[`JSONVisualizer.js`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js)
-[`JSONVisualizer.css`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.css)
-[`JSONTokenizer.js`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONTokenizer.js)
+[`JSONVisualizer.js`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.min.js)
+[`JSONVisualizer.css`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.css)
+[`JSONTokenizer.js`](https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONTokenizer.js)
 
 - **unpkg**: [`JSON visualizer package`](https://app.unpkg.com/@components-1812/json-visualizer)
-[`JSONVisualizer.js`](https://unpkg.com/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.js)
-[`JSONVisualizer.css`](https://unpkg.com/@components-1812/json-visualizer@0.0.1/src/JSONVisualizer.css)
-[`JSONTokenizer.js`](https://unpkg.com/@components-1812/json-visualizer@0.0.1/src/JSONTokenizer.js)
+[`JSONVisualizer.js`](https://unpkg.com/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.js)
+[`JSONVisualizer.css`](https://unpkg.com/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.css)
+[`JSONTokenizer.js`](https://unpkg.com/@components-1812/json-visualizer@0.0.3/src/JSONTokenizer.js)
 
 <br>
 
@@ -208,7 +208,7 @@ If you want to add custom stylesheets to the component or need to load styleshee
 
 ### Themes 
 
-You can use one of the existing themes located in the assets/themes folder.
+You can use one of the existing themes located in the [assets/themes](./assets/themes) folder.
 
 Example with Vite (or other bundlers):
 
@@ -219,7 +219,7 @@ import "@components-1812/json-visualizer/assets/themes/nord.css"
 Example with CDN:
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/@components-1812/json-visualizer@0.0.2/assets/themes/dracula.css">
+<link rel="stylesheet" href="https://unpkg.com/@components-1812/json-visualizer@0.0.3/assets/themes/dracula.css">
 ```
 
 Then apply the theme by using the corresponding class name:
@@ -291,8 +291,62 @@ type Token = {
 > The `type` property is required for the JSON to render correctly.
 >
 > The `tags` array is used for syntax highlighting.
+>
+> The `color` and `url` properties are used to render a visual preview or clickable link.
 
 Aqui puedes ver un ejemplo usando `babel-standalone`: [custom tokenizer](https://codepen.io/FrancoJavierGadea/pen/RNWVpXw)
+
+<br><br>
+
+## Color Preview
+
+```html
+<!-- Default -->
+<custom-json-visualizer colors="all"></custom-json-visualizer>
+
+<!-- All color type supported -->
+<custom-json-visualizer colors="hex, rgb, rgba, hsl, hsla, named"></custom-json-visualizer>
+
+<!-- Disable color preview -->
+<custom-json-visualizer colors="none"></custom-json-visualizer>
+```
+
+```js
+const jsonVisualizer = document.querySelector('custom-json-visualizer');
+
+jsonVisualizer.colors = 'all';
+jsonVisualizer.colors = 'none';
+jsonVisualizer.colors = null;
+jsonVisualizer.colors = 'hex, rgb, rgba, hsl, hsla, named';
+jsonVisualizer.colors = ['hex', 'rgb', 'rgba', 'hsl', 'hsla', 'named'];
+jsonVisualizer.colors = new Set(['hex', 'rgb', 'rgba', 'hsl', 'hsla', 'named']);
+
+jsonVisualizer.colors;//<- Set<String>
+```
+
+> **Note:**
+>
+> `<span>` Tokens representing colors are marked with `tags="color color-<color type> ..."`
+
+<br>
+
+## Clickable Links
+
+```html
+<!-- Default -->
+<custom-json-visualizer urls="all"></custom-json-visualizer>
+
+<!-- All URL types supported -->
+<custom-json-visualizer urls="http, https, ftp, www, domain, relative, mail, phone"></custom-json-visualizer>
+
+<!-- Disable clickable links -->
+<custom-json-visualizer urls="none"></custom-json-visualizer>
+```
+
+> **Note:**
+>
+> `<span>` Tokens representing URLs are marked with `tags="url url-<url type> ..."`
+
 
 <br><br>
 
@@ -316,9 +370,27 @@ Aqui puedes ver un ejemplo usando `babel-standalone`: [custom tokenizer](https:/
 
 - `copy-button`: Controls whether the copy button are rendered. Set to `"none"` to hide it.
 
-- `render-deep` default: `Infinity`: Limits the initial rendering depth for deeply nested JSON. Any non-numeric value is treated as `Infinity`. 
+- `render-deep` default: `Infinity`: Limits the initial rendering depth for **deeply nested JSON**. 
+
+    Any non-numeric value is treated as `Infinity`. 
 
     Deeper levels will only be rendered when expanded by the user.
+
+- `colors` default: `all`: Controls that **color types** show a preview.
+
+    Set to `colors="all"` to enable color preview for all recognized color types: `hex`, `rgb`, `rgba`, `hsl`, `hsla`, `named`
+
+    Set to Comma-separated list: `colors="hex, rgb, rgba, hsl, hsla, named"` 
+
+    Set to `colors="none"` to hide it.
+
+- `urls` default: `all`: Controls that **URL types** show a preview.
+
+    Set to `urls="all"` to enable clickable links for all recognized URL types: `http`, `https`, `ftp`, `relative`, `mail`, `phone`
+
+    Set to Comma-separated list: `urls="http, https, ftp, relative, mail, phone"` 
+
+    Set to `urls="none"` to hide it.
 
 
 #### Ready attributes
@@ -339,7 +411,11 @@ These properties reflect the corresponding HTML attributes:
 
 - `json` (reactive): A raw JSON string to render. Updating this will trigger a re-render.
 
+- `data` (readonly): Returns the parsed result of the current `json` value (`JSON.parse(json)`). If parsing fails, returns `null`.
+
 - `src` (reactive): A URL to fetch a JSON file. Updating this will also trigger a re-render.
+
+<br>
 
 - `lineNumbers`: Controls whether line numbers are shown. Use "none" to hide them.
 
@@ -349,11 +425,38 @@ These properties reflect the corresponding HTML attributes:
 
 - `copyButton`: Controls the visibility of the copy button.
 
-#### Other
+<br>
 
-- `data` (readonly): Returns the parsed result of the current `json` value (`JSON.parse(json)`). If parsing fails, returns `null`.
+- `renderDeep`: Limits the initial rendering depth for deeply nested JSON.
+
+    **Returns** a `number` of `render-deep` attribute or `Infinity`
 
 <br>
+
+- `colors`: Controls which color types should display a visual preview
+    
+    **Returns**:
+    
+    - A `Set<string>` containing the types listed in the `colors="rgb, hsl, ..."` attribute.
+
+    - An empty `Set` when `colors="none"`.
+
+    - A `Set` with all supported **color types** (as defined by `JSONVisualizer.defaults.colors`) when `colors="all"`
+
+<br>
+
+- `urls`: Controls which URL types should be rendered as clickable links
+
+    **Returns** 
+    
+    - A `Set<string>` containing the types listed in the `urls="http, https, ..."` attribute.
+    
+    - An empty `Set` when `urls="none"`
+
+    - A `Set` with all supported **URL types** (as defined by `JSONVisualizer.defaults.urls`) when `urls="all"`
+
+
+<br><br>
 
 ## Methods
 

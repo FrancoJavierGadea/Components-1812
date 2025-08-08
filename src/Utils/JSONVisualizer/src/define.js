@@ -1,6 +1,6 @@
 import JSONVisualizer from "./JSONVisualizer.js";
 
-const VERSION = "0.0.2";
+const VERSION = "0.0.3";
 const TAG_NAME = 'custom-json-visualizer';
 
 //Define the custom element

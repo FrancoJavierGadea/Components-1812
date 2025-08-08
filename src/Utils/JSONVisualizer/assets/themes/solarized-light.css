@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer solarized-light theme
+  version: 0.0.3
+*/
 custom-json-visualizer.solarized-light {
     --json-background: #fdf6e3;
     --json-foreground: #657b83;
@@ -12,6 +16,11 @@ custom-json-visualizer.solarized-light {
     --json-bracket: #93a1a1;
     --json-comma: #586e75;
     --json-colon: #586e75;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #586e75;
     --copy-button-hover-color: #073642;

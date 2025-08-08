@@ -26,7 +26,7 @@
             height: 480px;
             margin: 0 auto;
             border: 1px solid rgb(141, 11, 11);
-            overflow:auto;
+            overflow: hidden;
             resize: both;
         }
         custom-json-visualizer:not([ready-links]) {
@@ -37,7 +37,7 @@
 <body>
 
     <section>
-        <custom-json-visualizer render-deep="3">
+        <custom-json-visualizer class="contain" render-deep="3">
             {
                 "company": {
                     "name": "Acme Corp",
@@ -96,8 +96,8 @@
                 JSONVisualizerCSS: '../src/JSONVisualizer.css'
             },
             production: {
-                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.js",
-                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.2/src/JSONVisualizer.min.css'
+                JSONVisualizer: "https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.min.js",
+                JSONVisualizerCSS: 'https://cdn.jsdelivr.net/npm/@components-1812/json-visualizer@0.0.3/src/JSONVisualizer.min.css'
             }
         }
 

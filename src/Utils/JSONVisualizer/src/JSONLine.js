@@ -1,3 +1,16 @@
+/**
+ * @typedef {Object} JSONLineParams
+ * @property {number} level
+ * @property {number} number
+ * @property {string} [className]
+ * @property {boolean} [showNumber]
+ * @property {boolean} [toggleControl]
+ * @property {Node} [toggleIcon]
+ * @property {boolean} [isOpenBlock]
+ * @property {boolean} [isCloseBlock]
+ * @property {Set<string>} [colors] A colors list of color type to render
+ */
+
 export class JSONLine {
 
 	#node = null;
@@ -7,6 +20,9 @@ export class JSONLine {
 	toggleIcon = null;
 	#toggleButton = null;
 
+	/**
+	 * @param {JSONLineParams} [params]
+	 */
 	constructor(params = {}){
 
 		const { 
@@ -16,19 +32,38 @@ export class JSONLine {
 			toggleControl = false,
 			toggleIcon = null,
 			isOpenBlock = false,
-			isCloseBlock = false 
+			isCloseBlock = false,
+			colors = new Set(),
+			urls = new Set() 
 		} = params;
 
+		/**@type {number} */
 		this.level = level;
+		/**@type {number} */
 		this.number = number;
+
+		/**@type {string} */
 		this.className = className;
 
+		/**@type {boolean} */
 		this.isOpenBlock = isOpenBlock;
+		/**@type {boolean} */
 		this.isCloseBlock = isCloseBlock;
 
+		/**@type {boolean} */
 		this.showNumber = showNumber;
+
+		/**@type {boolean} */
 		this.toggleControl = toggleControl;
+
+		/**@type {Node|null} */
 		this.toggleIcon = toggleIcon;
+
+		/**@type {Set<string>} */
+		this.colors = colors;
+
+		/**@type {Set<string>} */
+		this.urls = urls;
 	}
 
 	//MARK:Render
@@ -76,17 +111,54 @@ export class JSONLine {
 
 		return this.node;
 	}
+	//MARK:renderToken
 	#renderToken(token = {}){
 		const { type, value, tags = [] } = token;
 
 		const span = document.createElement("span");
 		span.classList.add(`${this.className}-token`);
 		span.classList.add(type);
-
-		span.textContent = String(value);
-
 		span.setAttribute("tags", tags.join(" "));
 
+		if(this.urls.size > 0 && token.url && this.urls.has(token.url)){
+
+			const a = document.createElement("a");
+			a.classList.add(`${this.className}-url`);
+
+			a.href = (() => {
+
+				if(['domain', 'www'].includes(token.url)) return `https://${value}`;
+
+				if(token.url === 'mail' && !String(value).startsWith('mailto:')) return `mailto:${value}`;
+
+				if(token.url === 'phone' && !String(value).startsWith('tel:')) return `tel:${value}`;
+
+				return String(value);
+			})();
+
+			if(token.url !== 'relative'){
+
+				a.target = "_blank";
+				a.rel = "noopener noreferrer";
+			}
+	
+			a.textContent = String(value);
+			span.append(a);
+
+			return span;
+		}
+		if(this.colors.size > 0 && token.color && this.colors.has(token.color)){
+
+			const colorPreview = document.createElement("span");
+			colorPreview.classList.add(`${this.className}-color-preview`);
+			colorPreview.style.backgroundColor = value;
+
+			span.append(colorPreview, String(value));
+
+			return span;	
+		}
+		
+		span.textContent = String(value);
 		return span;
 	}
 	#renderToggleControl(){

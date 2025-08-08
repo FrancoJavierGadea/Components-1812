@@ -1,13 +1,19 @@
 /*
     JSONVisualizer.css
-    version: 0.0.2
+    version: 0.0.3
 */
 :host {
-    display: block;
-    width: 100%;
-    height: 100%;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+
+    width: fit-content;
+    height: fit-content;
+    min-width: 100%;
+    min-height: 100%;
     position: relative;
-    
+
     --line-height: 1.25;
     --line-elements-gap: 5px;
     --line-white-space: normal;
@@ -33,6 +39,8 @@
 
     --indentation-guides-lines-color: #444;
     --indentation-guides-lines-width: 1px;
+
+    --scrollbar-color: #555 #2a2a2a;
     
     --json-tab-size: 4ch;
 
@@ -49,15 +57,25 @@
     --json-brace: #ffd700;         
     --json-bracket: #ffd700;       
     --json-comma: #d4d4d4;         
-    --json-colon: #d4d4d4;   
-}
-/* JSON */
-:host .JSONVisualizer {
-    min-height: 100%;
+    --json-colon: #d4d4d4;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
+
+    --json-preview-color-width: 0.7em;
+    --json-preview-color-height: 0.7em;
+    --json-preview-color-border: 1px solid #ffffff;
+    --json-preview-color-margin: 0 0.25em;
+
     background-color: var(--json-background);
     color: var(--json-foreground);
     font-family: var(--font);
     line-height: var(--line-height);
+}
+/* JSON */
+:host .JSONVisualizer {
 
     .json-line {
         display: flex;
@@ -120,6 +138,25 @@
             background-size: round(down, var(--total-tab-size), 1px) 100%;
             background-repeat: no-repeat;
             background-position: 0 0;
+
+            a {
+                color: var(--json-url-color);
+                text-decoration: var(--json-url-text-decoration);
+
+                &:visited {
+                    color: var(--json-url-visited-color);
+                }
+                &:hover {
+                    color: var(--json-url-hover-color);
+                }
+            }
+            .json-line-color-preview {
+                display: inline-block;
+                width: var(--json-preview-color-width);
+                height: var(--json-preview-color-height);
+                border: var(--json-preview-color-border);
+                margin: var(--json-preview-color-margin);
+            }
         }
 
         &:not(:has(.json-line-toggle-button)) .json-line-content {
@@ -220,4 +257,23 @@
 }
 :host([copy-button="none"]) .copy-button  {
     display: none;
+}
+
+/* Fit to parent element */
+:host(.contain){
+
+    width: 100%;
+    height: 100%;
+
+    .JSONVisualizer {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-color);
+    }
+    .copy-button {
+        right: 10px;
+    }
 }

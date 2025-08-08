@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer iceberg theme
+  version: 0.0.3
+*/
 custom-json-visualizer.iceberg {
     --font: Consolas, "Courier New", monospace, sans-serif;
 
@@ -14,6 +18,11 @@ custom-json-visualizer.iceberg {
     --json-bracket: #225577;
     --json-comma: #88aacc;
     --json-colon: #88aacc;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #5588aa;
     --copy-button-hover-color: #0a1e2b;

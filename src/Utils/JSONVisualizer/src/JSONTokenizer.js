@@ -1,17 +1,38 @@
+import COLOR_PATTERNS from "./utils/color-patterns.js";
+import URL_PATTERNS from "./utils/url-patterns.js";
+
+
 /**
+ * @typedef {'brace-open' | 'brace-close' | 'bracket-open' | 'bracket-close' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null'} TokenType
+ * @typedef {'brace' | 'bracket' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null' | 'false'  | 'true' | 'open' | 'close'} TokenTypeTag
+ * @typedef {'key' | 'value' | 'array-value'} TokenRole
+ * @typedef {'hex' | 'rgb' | 'rgba' | 'hsl' | 'hsla' | 'named'} TokenColor
+ * @typedef {'color-hex' | 'color-rgb' | 'color-rgba' | 'color-hsl' | 'color-hsla' | 'color-named'} TokenColorTag
+ * @typedef {'http' | 'https' | 'ftp' | 'www' | 'domain' | 'relative' | 'mail' | 'phone'} TokenUrl
+ * @typedef {'url-http' | 'url-https' | 'url-ftp' | 'url-www' | 'url-domain' | 'url-relative' | 'url-mail' | 'url-phone'} TokenUrlTag
+ * @typedef {TokenTypeTag | TokenRole | TokenColorTag | TokenUrlTag } TokenTag
+ * 
  * @typedef {Object} Token
- *  @property {'brace-open' | 'brace-close' | 'bracket-open' | 'bracket-close' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null'} type
+ * @property {TokenType} type
  *     The specific type of the token, representing different JSON syntax elements.
- *  @property {string | boolean | number | null} value
- *     The actual value of the token. This can be any data type.
- *  @property {Array<'brace' | 'bracket' | 'colon' | 'comma' | 'string' | 'number' | 'boolean' | 'null' | 'open' | 'close' | 'key' | 'value' | 'array-value'>} tags
+ * @property {string | boolean | number | null} value
+ *     The actual value of the token. This can be any JSON value.
+ * @property {Array<TokenTag>} tags
  *     A list of additional tags that describe the token's role or category.
+ * @property {TokenColor} [color]
+ *     The color type if the token represents a color value.
+ * @property {TokenUrl} [url]
+ *     The URL type if the token represents a URL.
  */
 
 
+//MARK: JSONTokenizer
 export class JSONTokenizer {
 
-    static version = "0.0.2";
+    static version = "0.0.3";
+
+    static URL_PATTERNS = URL_PATTERNS;
+    static COLOR_PATTERNS = COLOR_PATTERNS;
 
     /**
      * @type {Token[]}
@@ -26,7 +47,9 @@ export class JSONTokenizer {
      * @param {String} rawJSON 
      * @returns 
      */
-    tokenize(rawJson){
+    tokenize(rawJson, options = {}){
+
+        const {detectURL = false, detectColor = true} = options;
 
         const minifyJson = this.clearJSON(rawJson);
 
@@ -94,8 +117,27 @@ export class JSONTokenizer {
 
                 const { value, endIndex } = this._parseString(minifyJson, i);
 
+                const token = { type: 'string', value, tags: ['string', role] };
+
+                if(detectURL){
+                    const result = this._isURL(value);
+
+                    if(result.isURL){
+                        token.tags.push(`url-${result.type}`);
+                        token.url = result.type;
+                    }
+                }
+                if(detectColor){
+                    const result = this._isColor(value);
+
+                    if(result.isColor){
+                        token.tags.push(`color-${result.type}`);
+                        token.color = result.type;
+                    }
+                }
+
                 this.tokens.push({ type: 'string-open', value: char, tags: ['string', 'open', role] });
-                this.tokens.push({ type: 'string', value, tags: ['string', role] });
+                this.tokens.push(token);
                 this.tokens.push({ type: 'string-close', value: char, tags: ['string', 'close', role] });
 
                 i = endIndex + 1; continue;
@@ -226,6 +268,91 @@ export class JSONTokenizer {
             return { value: null, raw: 'null', endIndex: startIndex + 3 };
         }
     }
+
+    /** MARK: _isURL
+     * 
+     * @param {string} string 
+     * @returns {{isURL:boolean, type: 'http' | 'https' | 'ftp' | 'www' | 'domain' | 'relative' | 'mail' | 'phone' | null}} type is the URL type if `isURL` is true
+     */
+    _isURL(string = ''){
+
+        if(!string) return { isURL: false, type: null};
+        if(typeof string !== 'string') return { isURL: false, type: null };
+        
+        for (const url of Object.values(JSONTokenizer.URL_PATTERNS)){
+
+            if(url.test(string)){
+
+                return { isURL: true, type: url.type };
+            }
+        }
+
+        return { isURL: false, type: null };
+    }
+
+    /** MARK:_isColor
+     * @param {string} string 
+     * @returns {{isColor:boolean, type:'hex' | 'rgb' | 'rgba' | 'hsl' | 'hsla' | 'named' | null}} type is the color type if `isColor` is true
+     */
+    _isColor(string = ''){
+
+        if(!string) return { isColor: false, type: null };
+        if(typeof string !== 'string') return { isColor: false, type: null };
+
+        for(const color of Object.values(JSONTokenizer.COLOR_PATTERNS)){
+
+            if(color.test(string)){
+
+                if(color.validRange && !color.validRange(string)){
+
+                    return { isColor: false, type: null };
+                }
+
+                return { isColor: true, type: color.type };
+            }
+        }
+
+        return { isColor: false, type: null };
+    }
+
+    _minifyJSON(input) {
+
+        console.log('f')
+        let result = '';
+        let inString = false;
+        let escape = false;
+
+        for (let i = 0; i < input.length; i++) {
+
+            const char = input[i];
+
+            if(inString){
+
+                result += char;
+
+                //Reset escape
+                if(escape){
+
+                    escape = false;
+                }
+                else {
+
+                    if(char === '\\') escape = true;
+                    if(char === '"') inString = false;
+                }
+            } 
+            else {
+
+                //
+                if(!/\s/.test(char)) result += char;
+                
+                if(char === '"') inString = true;
+            }
+        }
+
+        return result;
+    }
+
 }
 
 export default JSONTokenizer;

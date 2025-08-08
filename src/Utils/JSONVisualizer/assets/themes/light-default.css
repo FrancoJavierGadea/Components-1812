@@ -1,4 +1,8 @@
-custom-json-visualizer.light-default {
+/*
+  JSONVisualizer light-default theme
+  version: 0.0.3
+*/
+custom-json-visualizer.light-default, custom-json-visualizer.light  {
 
     --font: Consolas, "Courier New", monospace, sans-serif;
 
@@ -15,6 +19,11 @@ custom-json-visualizer.light-default {
     --json-bracket: #aa00aa;
     --json-comma: #888888;
     --json-colon: #888888;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #444444;
     --copy-button-hover-color: #000000;

@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer dracula theme
+  version: 0.0.3
+*/
 custom-json-visualizer.dracula {
     --json-background: #282a36;
     --json-foreground: #f8f8f2;
@@ -12,6 +16,11 @@ custom-json-visualizer.dracula {
     --json-bracket: #f8f8f2;
     --json-comma: #6272a4;
     --json-colon: #6272a4;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #bbb;
     --copy-button-hover-color: #fff;

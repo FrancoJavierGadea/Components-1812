@@ -1,11 +1,11 @@
-import {JSONLine} from "./JSONLine.js";
-import {JSONBlock} from "./JSONBlock.js";
-import JSONTokenizer from "./JSONTokenizer.js";
-import { CopyButton } from "./CopyButton.js";
+import {JSONLine} from './JSONLine.js';
+import {JSONBlock} from './JSONBlock.js';
+import JSONTokenizer from './JSONTokenizer.js';
+import { CopyButton } from './CopyButton.js';
 
 export class JSONVisualizer extends HTMLElement {
 
-	static version = "0.0.2";
+	static version = '0.0.3';
 
 	/**
 	 * @type {{links:string[], adopted:CSSStyleSheet[], raw:string[]}} Stylesheets to be applied to the component
@@ -20,19 +20,21 @@ export class JSONVisualizer extends HTMLElement {
 	 * Asynchronous function that tokenizes a JSON string.
 	 * @async
 	 * @param {string} rawJson - The input JSON string.
-	 * @returns {Promise<Array<import("./JSONTokenizer.js").Token>>} Array of tokens.
+	 * @returns {Promise<Array<import('./JSONTokenizer.js').Token>>} Array of tokens.
 	 */
- 	static getTokens = async (rawJson) => {
+ 	static getTokens = async (rawJson, options = {}) => {
 
         const tokenizer = new JSONTokenizer(); 
 
-        tokenizer.tokenize(rawJson);
+        tokenizer.tokenize(rawJson, options);
 
         return tokenizer.tokens;
     };
 
 	static defaults = {
-		renderDeep: Infinity
+		renderDeep: Infinity,
+		colors: new Set(['hex', 'rgb', 'rgba', 'hsl', 'hsla', 'named']),
+		urls: new Set(['http', 'https', 'ftp', 'www', 'domain', 'relative', 'mail', 'phone'])
 	}
 
 	#rootBlock = null;
@@ -42,20 +44,20 @@ export class JSONVisualizer extends HTMLElement {
 	constructor() {
 		super();
 
-		this.attachShadow({ mode: "open" });
+		this.attachShadow({ mode: 'open' });
 		this.shadowRoot.innerHTML = `
-			<div class="JSONVisualizer"></div>
-			<slot name="icons">
+			<div class='JSONVisualizer'></div>
+			<slot name='icons'>
 				<template>
-					<svg data-name="toggle" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-						<path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+					<svg data-name='toggle' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'>
+						<path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708'/>
 					</svg>
-					<svg data-name="copy" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-						<path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
-						<path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+					<svg data-name='copy' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'>
+						<path d='M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z'/>
+						<path d='M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z'/>
 					</svg>
-					<svg data-name="copy-done" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-						<path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/>
+					<svg data-name='copy-done' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'>
+						<path d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0'/>
 					</svg>
 				</template>
 			</slot>
@@ -64,14 +66,14 @@ export class JSONVisualizer extends HTMLElement {
 		//MARK: Styles managment
 		Promise.allSettled(
 			JSONVisualizer.stylesSheets.links.map((styleSheet) => {
-				const link = document.createElement("link");
-				link.rel = "stylesheet";
+				const link = document.createElement('link');
+				link.rel = 'stylesheet';
 				link.href = styleSheet;
 
 				const { promise, resolve, reject } = Promise.withResolvers();
 
-				link.addEventListener("load", () => resolve({ link, href: styleSheet, status: "loaded" }));
-				link.addEventListener("error", () => reject({ link, href: styleSheet, status: "error" }));
+				link.addEventListener('load', () => resolve({ link, href: styleSheet, status: 'loaded' }));
+				link.addEventListener('error', () => reject({ link, href: styleSheet, status: 'error' }));
 
 				this.shadowRoot.prepend(link);
 
@@ -79,16 +81,16 @@ export class JSONVisualizer extends HTMLElement {
 			})
 		).then((results) => {
 			this.dispatchEvent(
-				new CustomEvent("ready-links", {
+				new CustomEvent('ready-links', {
 					detail: { results: results.map((r) => r.value || r.reason) },
 				})
 			);
 
-			this.setAttribute("ready-links", "");
+			this.setAttribute('ready-links', '');
 		});
 
 		JSONVisualizer.stylesSheets.raw.forEach((style) => {
-			const styleElement = document.createElement("style");
+			const styleElement = document.createElement('style');
 			styleElement.textContent = style;
 			this.shadowRoot.prepend(styleElement);
 		});
@@ -131,10 +133,10 @@ export class JSONVisualizer extends HTMLElement {
 
 			this.shadowRoot.append( this.#copyButton.render() );
 		}
-		this.addEventListener("toggle-lines", this.#handletoggleLines);
+		this.addEventListener('toggle-lines', this.#handletoggleLines);
 
-		this.dispatchEvent(new CustomEvent("ready"));
-		this.setAttribute("ready", "");
+		this.dispatchEvent(new CustomEvent('ready'));
+		this.setAttribute('ready', '');
 	}
 
   	disconnectedCallback(){
@@ -171,16 +173,27 @@ export class JSONVisualizer extends HTMLElement {
 	}
 
 	//MARK: createJSONLines
-	async #createJSONLines(rawJSON){
+	/**
+	 * 
+	 * @param {string} rawJSON 
+	 * @param {{colors:Set<string>}} options 
+	 * @returns 
+	 */
+	async #createJSONLines(rawJSON, options = {}){
 
 		if (!JSONVisualizer.getTokens) {
 			console.warn(`JSONVisualizer.getTokens is not defined. Please ensure that the JSONTokenizer`);
 			return;
 		}
 
+		const { colors = this.colors, urls = this.urls } = options;
+
 		const lines = [];
 
-		const tokens = await JSONVisualizer.getTokens(rawJSON);
+		const tokens = await JSONVisualizer.getTokens(rawJSON, {
+			detectColor: colors.size > 0,
+			detectURL: urls.size > 0
+		});
 
 		let currentLine = null;
 		let level = 0;
@@ -188,16 +201,16 @@ export class JSONVisualizer extends HTMLElement {
 		
     	for (let i = 0; i < tokens.length; i++) {
 
-      		const { type, value, tags } = tokens.at(i);
+			const token = tokens.at(i);
 
-			if(["brace-close", "bracket-close"].includes(type)){
+			if(['brace-close', 'bracket-close'].includes(token.type)){
 
 				level--;
 
 				//Se asegura de que } y ] siempre esten en una nueva linea
 				const previousToken = tokens.at(i - 1);
 
-				if ( !["brace-open", "bracket-open", "comma"].includes(previousToken?.type) ) {
+				if ( !['brace-open', 'bracket-open', 'comma'].includes(previousToken?.type) ) {
 
 					currentLine = null;
 				}
@@ -206,18 +219,18 @@ export class JSONVisualizer extends HTMLElement {
 			//Crear una nueva linea si no existe
 			if(!currentLine) {
 
-				currentLine = new JSONLine({ level, number: lineNumber++ });
+				currentLine = new JSONLine({ level, number: lineNumber++, colors, urls});
 
 				lines.push(currentLine);
 			}
 
-			currentLine.addToken({ type, value, tags });
+			currentLine.addToken(token);
 
-			if(["brace-close", "bracket-close"].includes(type)) {
+			if(['brace-close', 'bracket-close'].includes(token.type)) {
 
 				const nextToken = tokens.at(i + 1);
 
-				if (nextToken?.type === "comma") {
+				if (nextToken?.type === 'comma') {
 
 					//Agregar la coma en la misma línea
 					currentLine.addToken(nextToken);
@@ -228,13 +241,13 @@ export class JSONVisualizer extends HTMLElement {
 				}
       		}
 
-			if(["brace-open", "bracket-open"].includes(type)){
+			if(['brace-open', 'bracket-open'].includes(token.type)){
 
 				level++;
 			};
 
 			//Crea un nueva linea
-			if(["brace-open","brace-close","bracket-open","bracket-close","comma"].includes(type)){
+			if(['brace-open','brace-close','bracket-open','bracket-close','comma'].includes(token.type)){
 
 				currentLine = null;
 			}
@@ -254,13 +267,15 @@ export class JSONVisualizer extends HTMLElement {
 		this.clearJSON();
 
 		const {
-			lineNumbers = this.lineNumbers !== 'none', 
-			toggleLines = this.toggleLines !== 'none', 
+			lineNumbers = this.lineNumbers, 
+			toggleLines = this.toggleLines, 
 			renderDeep = this.renderDeep,
+			colorPreview = this.colorPreview,
+			urlPreview = this.urlPreview,
 		} = config;
 		
 		//Create Lines
-		const lines = await this.#createJSONLines(rawJSON);
+		const lines = await this.#createJSONLines(rawJSON, {colorPreview, urlPreview});
 
 		const blocksStack = [];
 
@@ -314,12 +329,12 @@ export class JSONVisualizer extends HTMLElement {
 			currentBlock.content.push(line);
 		}
 
-		this.shadowRoot.querySelector(".JSONVisualizer").append( this.#rootBlock.render() );
+		this.shadowRoot.querySelector('.JSONVisualizer').append( this.#rootBlock.render() );
 
 		//Line number width
 		if(lineNumbers){
 			const minWidth = `${String(lines.length).length}ch`;
-			this.shadowRoot.querySelector(".JSONVisualizer").style.setProperty("--line-number-min-width", minWidth);
+			this.shadowRoot.querySelector('.JSONVisualizer').style.setProperty('--line-number-min-width', minWidth);
 		}
 		
 		this.setAttribute('ready-json', '');
@@ -327,12 +342,12 @@ export class JSONVisualizer extends HTMLElement {
   	}
 	getIcon(name, {clone = false} = {}){
 
-		const slot = this.shadowRoot.querySelector(`slot[name="icons"]`);
+		const slot = this.shadowRoot.querySelector(`slot[name='icons']`);
 
 		const defaultIcons = slot.querySelector('template').content;
 		const icons = slot.assignedNodes().at(0)?.content;
 
-		const icon = icons?.querySelector(`[data-name="${name}"]`) ?? defaultIcons.querySelector(`[data-name="${name}"]`);
+		const icon = icons?.querySelector(`[data-name='${name}']`) ?? defaultIcons.querySelector(`[data-name='${name}']`);
 
 		return clone ? icon.cloneNode(true) : icon;
 	}
@@ -345,7 +360,7 @@ export class JSONVisualizer extends HTMLElement {
 	}
 	clearListeners(){
 
-		this.removeEventListener("toggle-lines", this.#handletoggleLines);
+		this.removeEventListener('toggle-lines', this.#handletoggleLines);
 	}
 
 	//MARK: Toggle Lines
@@ -364,56 +379,36 @@ export class JSONVisualizer extends HTMLElement {
 	}
 
 	//MARK: Getters and Setters
-	set json(value) {
-
-		if(value) {
-
-			this.#data = typeof value === "string" ? JSON.parse(value) : value;
-		
-			this.setAttribute("json", JSON.stringify(this.#data));
-		} 
-		else {
-			this.removeAttribute("json");
-			this.#data = null;
-		}
-	}
-	get json() {
-		return this.getAttribute("json");
-	}
-	get data() {
-		return this.#data;
-	}
-
 	set lineNumbers(value) {
-		value ? this.setAttribute("line-numbers", "") : this.removeAttribute("line-numbers");
+		value ? this.setAttribute('line-numbers', '') : this.removeAttribute('line-numbers');
 	}
 	get lineNumbers() {
-		return this.getAttribute("line-numbers");
+		return this.getAttribute('line-numbers');
 	}
 
 	set toggleLines(value) {
-		value ? this.setAttribute("toggle-lines", "") : this.removeAttribute("toggle-lines");
+		value ? this.setAttribute('toggle-lines', '') : this.removeAttribute('toggle-lines');
 	}
 	get toggleLines() {
-		return this.getAttribute("toggle-lines");
+		return this.getAttribute('toggle-lines');
 	}
 
 	set indentationGuidesLines(value) {
-		value ? this.setAttribute("indentation-guides-lines", "") : this.removeAttribute("indentation-guides-lines");
+		value ? this.setAttribute('indentation-guides-lines', '') : this.removeAttribute('indentation-guides-lines');
 	}
 	get indentationGuidesLines() {
-		return this.getAttribute("indentation-guides-lines");
+		return this.getAttribute('indentation-guides-lines');
 	}
 
 	set copyButton(value) {
-		value ? this.setAttribute("copy-button", "") : this.removeAttribute("copy-button");
+		value ? this.setAttribute('copy-button', '') : this.removeAttribute('copy-button');
 	}
 	get copyButton() {
-		return this.getAttribute("copy-button");
+		return this.getAttribute('copy-button');
 	}
 
 	set renderDeep(value){
-		value ? this.setAttribute("render-deep", value) : this.removeAttribute("render-deep");
+		value ? this.setAttribute('render-deep', value) : this.removeAttribute('render-deep');
 	}
 	get renderDeep(){
 
@@ -424,11 +419,90 @@ export class JSONVisualizer extends HTMLElement {
 		return Number(value);
 	}
 
+	//MARK:colors
+	/** @param {string | Array<string> | Set<string> | null} value */
+	set colors(value){
+
+		if(value == null) return this.removeAttribute('colors');
+
+		if(typeof value === 'string') this.setAttribute('colors', value);
+
+		if(Array.isArray(value) || value instanceof Set){
+
+			const items = [...value].map(c => c.trim())
+				.filter(c => c && JSONVisualizer.defaults.colors.has(c));
+
+			return this.setAttribute('colors', items.join(','));
+		}
+	}
+	/** @return {Set<string>} */
+	get colors(){
+		const value = this.getAttribute('colors');
+
+		if (!value || value === 'all') return JSONVisualizer.defaults.colors;
+		if(value === 'none') return new Set();
+
+		return new Set(value.split(',')
+			.map(c => c.trim())
+			.filter(c => c && JSONVisualizer.defaults.colors.has(c))
+		);
+	}
+
+	//MARK:urls
+	/** @param {string | Array<string> | Set<string> | null} value */
+	set urls(value){
+		if(value == null) return this.removeAttribute('urls');
+
+		if(typeof value === 'string') this.setAttribute('urls', value);
+
+		if(Array.isArray(value) || value instanceof Set){
+
+			const items = [...value].map(u => u.trim())
+				.filter(u => u && JSONVisualizer.defaults.urls.has(u));
+
+			return this.setAttribute('urls', items.join(','));
+		}
+	}
+	/** @return {Set<string>} */
+	get urls(){
+		const value = this.getAttribute('urls');
+
+		if (!value || value === 'all') return JSONVisualizer.defaults.urls;
+		if(value === 'none') return new Set();
+
+		return new Set(value.split(',')
+			.map(u => u.trim())
+			.filter(u => u && JSONVisualizer.defaults.urls.has(u))
+		);
+	}
+
+	//MARK:src
 	set src(value){
-		value ? this.setAttribute("src", value) : this.removeAttribute("src");
+		value ? this.setAttribute('src', value) : this.removeAttribute('src');
 	}
 	get src(){
-		return this.getAttribute("src");
+		return this.getAttribute('src');
+	}
+
+	//MARK:json and data
+	set json(value) {
+
+		if(value) {
+
+			this.#data = typeof value === 'string' ? JSON.parse(value) : value;
+		
+			this.setAttribute('json', JSON.stringify(this.#data));
+		} 
+		else {
+			this.removeAttribute('json');
+			this.#data = null;
+		}
+	}
+	get json() {
+		return this.getAttribute('json');
+	}
+	get data() {
+		return this.#data;
 	}
 }
 

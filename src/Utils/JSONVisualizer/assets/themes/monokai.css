@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer monokai theme
+  version: 0.0.3
+*/
 custom-json-visualizer.monokai {
 
     --json-background: #272822;
@@ -13,6 +17,11 @@ custom-json-visualizer.monokai {
     --json-bracket: #f8f8f2;
     --json-comma: #75715e;
     --json-colon: #75715e;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #999;
     --copy-button-hover-color: #fff;

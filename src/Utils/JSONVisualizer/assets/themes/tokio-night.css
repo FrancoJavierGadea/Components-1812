@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer tokio-night theme
+  version: 0.0.3
+*/
 custom-json-visualizer.tokio-night {
     --json-background: #1a1b26;
     --json-foreground: #c0caf5;
@@ -12,6 +16,11 @@ custom-json-visualizer.tokio-night {
     --json-bracket: #c0caf5;
     --json-comma: #565f89;
     --json-colon: #565f89;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #888;
     --copy-button-hover-color: #fff;

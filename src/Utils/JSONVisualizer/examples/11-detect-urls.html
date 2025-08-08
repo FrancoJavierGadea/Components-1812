@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4 - Indentation guides lines</title>
+    <title>11 - detect urls</title>
 
     <style>
         body, html {
@@ -15,14 +15,13 @@
         }
         body {
             display: flex;
-            justify-content: flex-start;
+            justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             gap: 50px;
         }
 
         section {
-            width: 400px;
-            height: 480px;
             margin: 0 auto;
             border: 1px solid rgb(141, 11, 11);
             overflow: hidden;
@@ -33,46 +32,38 @@
 <body>
 
     <section>
-        <custom-json-visualizer style="--indentation-guides-lines-color: #f124f1">
+        <custom-json-visualizer class="contain" urls="relative">
             {
-                "name": "John Doe",
-                "age": null,
-                "isStudent": false,
-                "courses": ["Math", "Science"],
-                "address": {
-                    "street": "123 Main St",
-                    "city": "Anytown"
-                },
-                "grades": [ 85, 92, 78 ],
-                "contact": {
-                    "email": "john.doe@example.com",
-                    "phone": "123-456-7890"
-                },
-                "active": true
+                "absolute": [
+                    "http://example.com",
+                    "https://example.com/path?query=1#fragment",
+                    "ftp://files.example.com/download.zip",
+                    "http://localhost:8080/dashboard",
+                    "http://192.168.1.1/config"
+                ],
+                "relative": [
+                    "/about",
+                    "./contact.html",
+                    "../images/photo.png",
+                    "./scripts/app.js",
+                    "assets/styles.css"
+                ],
+                "mail": [
+                    "test@example.com",
+                    "info@domain.org?subject=Inquiry",
+                    "mailto:support@company.net?body=Hello%20there"
+                ],
+                "phone": [
+                    "+1-800-555-1234",
+                    "800-555-5678",
+                    "(800) 555-9012",
+                    "+44 20 7946 0958",
+                    "020 7946 0958"
+                ]
             }
         </custom-json-visualizer>
     </section>
 
-    <section>
-        <custom-json-visualizer indentation-guides-lines="none">
-            {
-                "name": "John Doe",
-                "age": null,
-                "isStudent": false,
-                "courses": ["Math", "Science"],
-                "address": {
-                    "street": "123 Main St",
-                    "city": "Anytown"
-                },
-                "grades": [ 85, 92, 78 ],
-                "contact": {
-                    "email": "john.doe@example.com",
-                    "phone": "123-456-7890"
-                },
-                "active": true
-            }
-        </custom-json-visualizer>
-    </section>
 
     <script type="module">
         const mode = 'development';

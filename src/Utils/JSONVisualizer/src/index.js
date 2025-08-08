@@ -1,7 +1,7 @@
 import JSONVisualizer from "./JSONVisualizer.js";
 import JSONVisualizerRawCSS from "./JSONVisualizer.css?raw";
 
-const VERSION = "0.0.2";
+const VERSION = "0.0.3";
 const TAG_NAME = 'custom-json-visualizer';
 
 //Add styles

@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer nord theme
+  version: 0.0.3
+*/
 custom-json-visualizer.nord {
     --json-background: #2e3440;
     --json-foreground: #d8dee9;
@@ -12,6 +16,11 @@ custom-json-visualizer.nord {
     --json-bracket: #eceff4;
     --json-comma: #4c566a;
     --json-colon: #4c566a;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #888;
     --copy-button-hover-color: #fff;

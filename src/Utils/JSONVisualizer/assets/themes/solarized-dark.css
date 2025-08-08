@@ -1,3 +1,7 @@
+/*
+  JSONVisualizer solarized-dark theme
+  version: 0.0.3
+*/
 custom-json-visualizer.solarized-dark {
 
     --json-background: #002b36;
@@ -13,6 +17,11 @@ custom-json-visualizer.solarized-dark {
     --json-bracket: #93a1a1;
     --json-comma: #586e75;
     --json-colon: #586e75;
+
+    --json-url-color: inherit;
+    --json-url-visited-color: inherit;
+    --json-url-hover-color: inherit;  
+    --json-url-text-decoration: underline;
 
     --copy-button-color: #839496;
     --copy-button-hover-color: #fff;
