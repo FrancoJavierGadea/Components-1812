@@ -47,6 +47,7 @@ test('JSONTokenizer minifyJSON: complete json', async (t) => {
             catch(err){
 
                 console.log({name, value, result});
+                throw err;
             }
         });
     }

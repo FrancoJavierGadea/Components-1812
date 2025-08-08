@@ -49,9 +49,9 @@ export class JSONTokenizer {
      */
     tokenize(rawJson, options = {}){
 
-        const {detectURL = false, detectColor = true} = options;
+        const {detectURL = false, detectColor = true, strict = false} = options;
 
-        const minifyJson = this.clearJSON(rawJson);
+        const minifyJson = this.clearJSON(rawJson, {strict});
 
         this.tokens = [];
 
@@ -178,18 +178,25 @@ export class JSONTokenizer {
      * @param {String} rawJSON 
      * @returns {String} A minified JSON string
      */
-    clearJSON(rawJson){
+    clearJSON(rawJson, options = {}){
 
-        if(!rawJson){
-            console.warn(`No raw JSON provided to clearJSON method.`);
-            return;
+        if(!rawJson || typeof rawJson !== 'string'){
+            
+           throw new Error('Invalid JSON input. Expected a string.');
         }
 
-        const json = JSON.parse(rawJson);
+        const  {strict = false} = options;
 
-        const minifyJson = JSON.stringify(json);
+        if(strict){
 
-        return minifyJson;
+            const json = JSON.parse(rawJson);
+            const minifyJson = JSON.stringify(json);
+    
+            return minifyJson;
+        }
+        else {
+            return this._minifyJSON(rawJson);
+        }
     }
 
 
@@ -317,7 +324,6 @@ export class JSONTokenizer {
 
     _minifyJSON(input) {
 
-        console.log('f')
         let result = '';
         let inString = false;
         let escape = false;
@@ -344,7 +350,7 @@ export class JSONTokenizer {
             else {
 
                 //
-                if(!/\s/.test(char)) result += char;
+                if( !(/\s/.test(char)) ) result += char;
                 
                 if(char === '"') inString = true;
             }
