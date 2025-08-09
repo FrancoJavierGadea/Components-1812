@@ -176,27 +176,35 @@ export class JSONTokenizer {
     /**
      * 
      * @param {String} rawJSON 
+     * @param {{strict:Boolean|'auto'}} options
      * @returns {String} A minified JSON string
      */
     clearJSON(rawJson, options = {}){
 
-        if(!rawJson || typeof rawJson !== 'string'){
+        if(typeof rawJson?.valueOf() !== 'string'){
             
            throw new Error('Invalid JSON input. Expected a string.');
         }
 
-        const  {strict = false} = options;
+        const {strict = 'auto'} = options;
 
-        if(strict){
+        if(strict === true) return JSON.stringify(JSON.parse(rawJson));
 
-            const json = JSON.parse(rawJson);
-            const minifyJson = JSON.stringify(json);
-    
-            return minifyJson;
+        if(strict === false) return this._minifyJSON(rawJson);
+
+        if(strict === 'auto'){
+
+            try {
+
+                return JSON.stringify(JSON.parse(rawJson));
+            } 
+            catch (err) {
+
+                return this._minifyJSON(rawJson);
+            }
         }
-        else {
-            return this._minifyJSON(rawJson);
-        }
+
+        throw new Error("Invalid 'strict' option. Expected true, false, or 'auto'.");
     }
 
 
@@ -226,7 +234,14 @@ export class JSONTokenizer {
 
         const raw = rawJson.slice(startIndex, i + 1);
 
-        return { value: JSON.parse(raw), raw, endIndex: i };
+        try {
+            
+            return { value: JSON.parse(raw), raw, endIndex: i };
+        } 
+        catch (error) {
+            
+            return { value: raw.slice(1, -1), raw, endIndex: i };
+        }
     }
     /**
      * @param {String} rawJson 
@@ -322,19 +337,23 @@ export class JSONTokenizer {
         return { isColor: false, type: null };
     }
 
-    _minifyJSON(input) {
+    _minifyJSON(rawJson) {
 
-        let result = '';
+        if(typeof rawJson?.valueOf() !== 'string') throw new Error('Invalid JSON input. Expected a string.')
+        if(rawJson.length === 0) return '';
+
+        let result = [];
         let inString = false;
         let escape = false;
+        const length = rawJson.length;
 
-        for (let i = 0; i < input.length; i++) {
+        for (let i = 0; i < length; i++) {
 
-            const char = input[i];
+            const char = rawJson[i];
 
             if(inString){
 
-                result += char;
+                result.push(char);
 
                 //Reset escape
                 if(escape){
@@ -350,13 +369,13 @@ export class JSONTokenizer {
             else {
 
                 //
-                if( !(/\s/.test(char)) ) result += char;
+                if(char !== ' ' && char !== '\n' && char !== '\t' && char !== '\r') result.push(char);
                 
                 if(char === '"') inString = true;
             }
         }
 
-        return result;
+        return result.join('');
     }
 
 }

@@ -125,16 +125,17 @@ test('JSONTokenizer minifyJSON: complete json', async (t) => {
     for (const target of TARGETS) {
 
         const {name, value} = target;
-        const {incomplete} = getIncompleteJSON(value);
+        const {incomplete, complete} = getIncompleteJSON(value);
 
         await t.test(`${name}: complete`, (t) => {
 
-            const input = incomplete.json;
-            const expected = incomplete.minify;
-
-            const result = tokenizer._minifyJSON(input);
-
+            const input = complete.json;
+            const expected = complete.minify;
+            let result = null;
+            
             try {
+    
+                result = tokenizer._minifyJSON(input);
 
                 t.assert.equal(result, expected);
             }
@@ -149,10 +150,11 @@ test('JSONTokenizer minifyJSON: complete json', async (t) => {
 
             const input = incomplete.json;
             const expected = incomplete.minify;
-
-            const result = tokenizer._minifyJSON(input);
-
+            let result = null;
+            
             try {
+    
+                result = tokenizer._minifyJSON(input);
 
                 t.assert.equal(result, expected);
             }
@@ -162,6 +164,29 @@ test('JSONTokenizer minifyJSON: complete json', async (t) => {
                 throw err;
             }
         });
+
+        await t.test(`${name}: clearJSON`, (t) => {
+
+            const input = incomplete.json;
+            const expected = incomplete.minify;
+            let result = null;
+            
+            try {
+    
+                t.assert.throws(() => tokenizer.clearJSON(input, {strict: true}));
+                t.assert.doesNotThrow(() => tokenizer.clearJSON(input, {strict: false}));
+                t.assert.doesNotThrow(() => tokenizer.clearJSON(input, {strict: 'auto'}));
+
+                result = tokenizer.clearJSON(input);
+
+                t.assert.equal(result, expected);
+            }
+            catch(err){
+
+                console.log({name, value: input, result, expected});
+                throw err;
+            }
+        })
     }
 });
 

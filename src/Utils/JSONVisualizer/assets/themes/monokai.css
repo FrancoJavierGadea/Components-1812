@@ -33,4 +33,6 @@ custom-json-visualizer.monokai {
     --line-number-background: transparent;
 
     --indentation-guides-lines-color: #444;
+
+    --json-folded-message-color: #999;
 }

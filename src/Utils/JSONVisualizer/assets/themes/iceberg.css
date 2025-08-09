@@ -33,5 +33,7 @@ custom-json-visualizer.iceberg {
     --line-number-color: #aaccee;
     --line-number-background: transparent;
 
-    --indentation-guides-lines-color: #dceff8; 
+    --indentation-guides-lines-color: #dceff8;
+    
+    --json-folded-message-color: #5588aa;
 }

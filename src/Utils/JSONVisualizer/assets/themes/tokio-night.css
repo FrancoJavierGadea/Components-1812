@@ -33,4 +33,5 @@ custom-json-visualizer.tokio-night {
 
     --indentation-guides-lines-color: #2f3549;
 
+    --json-folded-message-color: #888;
 }

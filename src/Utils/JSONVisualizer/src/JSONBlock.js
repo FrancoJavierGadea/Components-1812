@@ -1,18 +1,28 @@
 export class JSONBlock {
 
 	#node = null;
+
+	/**@type {Array<JSONLine | JSONBlock>} */
 	content = [];
+
+	/**@type {JSONLine} */
 	openLine = null;
+	/**@type {JSONLine} */
 	closeLine = null;
+
+	/**@type {boolean} */
 	folded = false;
 
 	constructor(params = {}){
 
-		const {className = 'json-block', level = 0, showContent = true} = params;
+		const {className = 'json-block', level = 0, showContent = true, foldedMessage = '', folded = false} = params;
 
 		this.className = className;
 		this.level = level;
 		this.showContent = showContent;
+		this.foldedMessage = foldedMessage;
+
+		this.folded = folded;
 	}
 
 	//MARK:Render
@@ -26,6 +36,17 @@ export class JSONBlock {
 
 		this.node.setAttribute('level', this.level);
 		this.node.style.setProperty('--level', this.level);
+
+		if(this.folded) this.node.setAttribute("folded", "");
+		
+		if(this.foldedMessage && this.foldedMessage !== 'none'){
+
+			const message = this.foldedMessage.includes('{content_length}') ? 
+				this.foldedMessage.replace('{content_length}', this.content.length) : 
+				this.foldedMessage;
+
+			this.node.style.setProperty('--json-folded-message-content', `"${message}"`);
+		}
 
 		//
 		if(this.openLine){
@@ -50,6 +71,8 @@ export class JSONBlock {
 		return this.node;
 	}
 	renderContent(){
+
+		this.showContent = true;
 
 		const fragment = document.createDocumentFragment();
 

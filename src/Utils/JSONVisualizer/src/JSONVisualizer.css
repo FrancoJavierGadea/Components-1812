@@ -59,6 +59,9 @@
     --json-comma: #d4d4d4;         
     --json-colon: #d4d4d4;
 
+    --json-folded-message-content: unset;
+    --json-folded-message-color: #777;
+
     --json-url-color: inherit;
     --json-url-visited-color: inherit;
     --json-url-hover-color: inherit;  
@@ -81,6 +84,7 @@
         display: flex;
         gap: var(--line-elements-gap);
 
+        /* MARK: line number */
         .json-line-number {
             min-width: var(--line-number-min-width);
             width: var(--line-number-width);
@@ -93,6 +97,7 @@
             user-select: none;
         }
 
+        /* MARK: toggle button */
         .json-line-toggle-button {
             display: block;
             flex-grow: 0;
@@ -117,6 +122,7 @@
             }
         }
 
+        /* MARK: line content */
         .json-line-content {
             flex-grow: 1;
             flex-shrink: 1;
@@ -139,7 +145,8 @@
             background-repeat: no-repeat;
             background-position: 0 0;
 
-            a {
+            /* MARK: urls and colors preview */
+            .json-line-url {
                 color: var(--json-url-color);
                 text-decoration: var(--json-url-text-decoration);
 
@@ -166,8 +173,16 @@
     .json-block[folded] .json-block-content {
         display: none;
     }
+    /* MARK: Folded Message */
+    .json-block[folded] .json-line:first-child .json-line-content span:last-child::after {
+        display: inline-block;
+        content: var(--json-folded-message-content, "\22ef");
+        color: var(--json-folded-message-color);
+        margin: 0.1em 0.2em 0;
+        line-height: 1em;
+    }
 
-    /* Theme */
+    /*MARK: Theme highlighting */
     span[tags~="brace"]{
         color: var(--json-brace);
     }
@@ -215,8 +230,11 @@
 
     background-image: none;
 }
+:host([folded-message="none"]) .JSONVisualizer .json-block[folded] .json-line:first-child .json-line-content span:last-child::after {
+    display: none;
+}
 
-/* Copy button */
+/* MARK: Copy button */
 :host .copy-button {
     display: grid;
     grid-template-columns: 1fr;

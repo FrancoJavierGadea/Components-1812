@@ -356,7 +356,7 @@ jsonVisualizer.colors;//<- Set<String>
 
 - `src`: URL used to fetch a JSON file.
 
-    If the src attribute is not set, the component will use either the json attribute or its textContent during initialization.
+    If the `src` attribute is not set, the component will use either the `json` attribute or its `textContent` during initialization.
 
 - `json`: A raw JSON string to render directly.
 
@@ -370,11 +370,15 @@ jsonVisualizer.colors;//<- Set<String>
 
 - `copy-button`: Controls whether the copy button are rendered. Set to `"none"` to hide it.
 
+<br>
+
 - `render-deep` default: `Infinity`: Limits the initial rendering depth for **deeply nested JSON**. 
 
     Any non-numeric value is treated as `Infinity`. 
 
     Deeper levels will only be rendered when expanded by the user.
+
+<br>
 
 - `colors` default: `all`: Controls that **color types** show a preview.
 
@@ -384,6 +388,8 @@ jsonVisualizer.colors;//<- Set<String>
 
     Set to `colors="none"` to hide it.
 
+<br>
+
 - `urls` default: `all`: Controls that **URL types** show a preview.
 
     Set to `urls="all"` to enable clickable links for all recognized URL types: `http`, `https`, `ftp`, `relative`, `mail`, `phone`
@@ -392,6 +398,28 @@ jsonVisualizer.colors;//<- Set<String>
 
     Set to `urls="none"` to hide it.
 
+<br>
+
+- `folded-message`: The message displayed between lines when a section is folded. 
+    The default is: \22ef (middle dots: ⋯) when not set.
+
+    Set a custom message to display when the section is folded, for example: `folded-message="folded items..."`
+    
+    You can use the `{content_lenght}` variable in the custom message: 
+
+    ```html
+    <custom-json-visualizer folded-message="{content_lenght} folded items..."></custom-json-visualizer>
+    ```
+
+    Set `folded-message="none"` to hide it.
+
+    > **Note**
+    >
+    > Internally, the folded-message attribute is used to set the CSS variable `--json-folded-message-content`.
+    >
+    > You can try setting it manually if needed, but the recommended way is to use the attribute directly
+
+<br><br>
 
 #### Ready attributes
 

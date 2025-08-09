@@ -35,4 +35,6 @@ custom-json-visualizer.light-default, custom-json-visualizer.light  {
     --line-number-background: transparent;
 
     --indentation-guides-lines-color: #dddddd;
+
+	--json-folded-message-color: #444444;
 }

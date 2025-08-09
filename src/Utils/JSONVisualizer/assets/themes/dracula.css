@@ -33,4 +33,5 @@ custom-json-visualizer.dracula {
 
     --indentation-guides-lines-color: #44475a;
 
+    --json-folded-message-color: #bbb;
 }

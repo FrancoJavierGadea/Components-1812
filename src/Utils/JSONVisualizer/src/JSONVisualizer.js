@@ -34,7 +34,9 @@ export class JSONVisualizer extends HTMLElement {
 	static defaults = {
 		renderDeep: Infinity,
 		colors: new Set(['hex', 'rgb', 'rgba', 'hsl', 'hsla', 'named']),
-		urls: new Set(['http', 'https', 'ftp', 'www', 'domain', 'relative', 'mail', 'phone'])
+		urls: new Set(['http', 'https', 'ftp', 'www', 'domain', 'relative', 'mail', 'phone']),
+		foldedMessage: '\u22ef',
+		strict: 'auto'
 	}
 
 	#rootBlock = null;
@@ -103,6 +105,8 @@ export class JSONVisualizer extends HTMLElement {
 
 	attributeChangedCallback(name, oldValue, newValue){
 
+		console.log({name, newValue, oldValue});
+
 		if(name === 'src' && newValue !== oldValue){
 
 			this.loadJSON(newValue);
@@ -116,7 +120,7 @@ export class JSONVisualizer extends HTMLElement {
 
 	connectedCallback() {
 
-		if(!this.src && !this.json){
+		if(!this.getAttribute('src') && !this.getAttribute('json')){
 
 			this.json = this.textContent;
 		}
@@ -190,9 +194,12 @@ export class JSONVisualizer extends HTMLElement {
 
 		const lines = [];
 
+		console.log(this.strict)
+
 		const tokens = await JSONVisualizer.getTokens(rawJSON, {
 			detectColor: colors.size > 0,
-			detectURL: urls.size > 0
+			detectURL: urls.size > 0,
+			strict: this.strict
 		});
 
 		let currentLine = null;
@@ -267,15 +274,15 @@ export class JSONVisualizer extends HTMLElement {
 		this.clearJSON();
 
 		const {
-			lineNumbers = this.lineNumbers, 
-			toggleLines = this.toggleLines, 
+			lineNumbers = this.lineNumbers !== 'none', 
+			toggleLines = this.toggleLines !== 'none', 
 			renderDeep = this.renderDeep,
-			colorPreview = this.colorPreview,
-			urlPreview = this.urlPreview,
+			colors = this.colors,
+			urls = this.urls,
 		} = config;
 		
 		//Create Lines
-		const lines = await this.#createJSONLines(rawJSON, {colorPreview, urlPreview});
+		const lines = await this.#createJSONLines(rawJSON, {colors, urls});
 
 		const blocksStack = [];
 
@@ -289,11 +296,15 @@ export class JSONVisualizer extends HTMLElement {
 
 				const block = new JSONBlock({
 					level: line.level,
-					showContent: line.level < renderDeep
+					showContent: line.level < renderDeep,
+					foldedMessage: this.foldedMessage
 				});
 
 				block.openLine = line;
 				line.block = block;
+
+				//If the content not show, init folded
+				block.folded = !block.showContent;
 
 				if(toggleLines){
 
@@ -329,6 +340,18 @@ export class JSONVisualizer extends HTMLElement {
 			currentBlock.content.push(line);
 		}
 
+		if(!this.#rootBlock && blocksStack.length > 0){
+
+			while(blocksStack.length > 1){
+
+				const block = blocksStack.pop();
+				blocksStack.at(-1).content.push(block);
+			}
+
+			this.#rootBlock = blocksStack.at(0);
+		}
+
+	
 		this.shadowRoot.querySelector('.JSONVisualizer').append( this.#rootBlock.render() );
 
 		//Line number width
@@ -369,8 +392,8 @@ export class JSONVisualizer extends HTMLElement {
 
 		if(!line.block.showContent){
 
-			line.block.showContent = true;
 			line.block.renderContent();
+			line.block.folded && line.block.unfold();
 		}
 		else {
 
@@ -406,6 +429,14 @@ export class JSONVisualizer extends HTMLElement {
 	get copyButton() {
 		return this.getAttribute('copy-button');
 	}
+
+	set foldedMessage(value) {
+		value ? this.setAttribute('folded-message', value) : this.removeAttribute('folded-message');
+	}
+	get foldedMessage() {
+		return this.getAttribute('folded-message') ?? JSONVisualizer.defaults.foldedMessage;
+	}
+
 
 	set renderDeep(value){
 		value ? this.setAttribute('render-deep', value) : this.removeAttribute('render-deep');
@@ -476,6 +507,22 @@ export class JSONVisualizer extends HTMLElement {
 		);
 	}
 
+	set strict(value){
+		value ? this.setAttribute('strict', value) : this.removeAttribute('strict');
+	}
+	/**@returns {boolean | 'auto'} */
+	get strict(){
+
+		const value = this.getAttribute('strict')?.toLowerCase();
+
+		if (!value && this.hasAttribute('strict')) return true;
+		
+		if(value === 'none' || value === 'false') return false;
+		if(value === 'true') return true;
+
+		return JSONVisualizer.defaults.strict;
+	}
+
 	//MARK:src
 	set src(value){
 		value ? this.setAttribute('src', value) : this.removeAttribute('src');
@@ -487,19 +534,35 @@ export class JSONVisualizer extends HTMLElement {
 	//MARK:json and data
 	set json(value) {
 
-		if(value) {
+		if (value == null) {
+			this.removeAttribute('json');
+			this.#data = null;
+			return;
+		}
 
-			this.#data = typeof value === 'string' ? JSON.parse(value) : value;
-		
+		if (typeof value === 'string') {
+
+			try {
+				this.#data = JSON.parse(value);
+				this.setAttribute('json', JSON.stringify(this.#data));
+			} 
+			catch {
+				// Si no es JSON válido, lo guardamos como string puro
+				this.#data = value;
+				this.setAttribute('json', value);
+			}
+		} 
+		else if (typeof value === 'object') {
+
+			this.#data = value;
 			this.setAttribute('json', JSON.stringify(this.#data));
 		} 
 		else {
-			this.removeAttribute('json');
-			this.#data = null;
+			throw new TypeError('json must be a string or object');
 		}
 	}
 	get json() {
-		return this.getAttribute('json');
+		return {raw: this.getAttribute('json'), parsed: this.#data };
 	}
 	get data() {
 		return this.#data;

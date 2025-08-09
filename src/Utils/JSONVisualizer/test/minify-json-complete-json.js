@@ -38,10 +38,37 @@ test('JSONTokenizer minifyJSON: complete json', async (t) => {
             const input = JSON.stringify(value, null, 2);
             const expected = JSON.stringify(value);
 
-            const result = tokenizer._minifyJSON(input);
+            let result = null;
 
             try {
 
+                result = tokenizer._minifyJSON(input);
+
+                t.assert.equal(result, expected);
+            }
+            catch(err){
+
+                console.log({name, value, result});
+                throw err;
+            }
+        });
+
+        await t.test(`${name} clearJSON`, (t) => {
+
+            const input = JSON.stringify(value, null, 2);
+            const expected = JSON.stringify(value);
+
+            let result = null;
+
+            try {
+
+                result = tokenizer.clearJSON(input, {strict: true});
+                t.assert.equal(result, expected);
+
+                result = tokenizer.clearJSON(input, {strict: false});
+                t.assert.equal(result, expected);
+
+                result = tokenizer.clearJSON(input, {strict: 'auto'});
                 t.assert.equal(result, expected);
             }
             catch(err){
