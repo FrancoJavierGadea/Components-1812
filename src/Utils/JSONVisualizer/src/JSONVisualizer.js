@@ -105,8 +105,6 @@ export class JSONVisualizer extends HTMLElement {
 
 	attributeChangedCallback(name, oldValue, newValue){
 
-		console.log({name, newValue, oldValue});
-
 		if(name === 'src' && newValue !== oldValue){
 
 			this.loadJSON(newValue);
@@ -193,8 +191,6 @@ export class JSONVisualizer extends HTMLElement {
 		const { colors = this.colors, urls = this.urls } = options;
 
 		const lines = [];
-
-		console.log(this.strict)
 
 		const tokens = await JSONVisualizer.getTokens(rawJSON, {
 			detectColor: colors.size > 0,
@@ -340,6 +336,7 @@ export class JSONVisualizer extends HTMLElement {
 			currentBlock.content.push(line);
 		}
 
+		//For incomplete JSON
 		if(!this.#rootBlock && blocksStack.length > 0){
 
 			while(blocksStack.length > 1){
@@ -351,7 +348,6 @@ export class JSONVisualizer extends HTMLElement {
 			this.#rootBlock = blocksStack.at(0);
 		}
 
-	
 		this.shadowRoot.querySelector('.JSONVisualizer').append( this.#rootBlock.render() );
 
 		//Line number width

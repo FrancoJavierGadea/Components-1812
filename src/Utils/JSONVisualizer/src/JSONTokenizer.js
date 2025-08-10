@@ -58,8 +58,17 @@ export class JSONTokenizer {
         let contextStack = [];
         let role = 'key';
         let i = 0;
+        let iterations = 0;
+        const maxIterations = minifyJson.length;
 
         while(i < minifyJson.length){
+
+            iterations++;
+
+            if(iterations > maxIterations){
+                
+                throw new Error(`Infinite loop detected while tokenizing JSON. Check the input: ${minifyJson}`);
+            }
 
             const char = minifyJson[i];
             const currentContext = contextStack.at(-1);
@@ -169,7 +178,13 @@ export class JSONTokenizer {
 
                 i = endIndex + 1; continue;
             }
-        }
+
+            const { value, endIndex } = this._parseUnknown(minifyJson, i);
+
+            this.tokens.push({ type: 'unknown', value, tags: ['unknown', role] });
+
+            i = endIndex + 1;
+        }   
     }
 
     //MARK: cleanJSON
@@ -232,15 +247,17 @@ export class JSONTokenizer {
             i++;
         }
 
-        const raw = rawJson.slice(startIndex, i + 1);
+        const endIndex = i;
+        let raw = rawJson.slice(startIndex, endIndex + 1);
 
         try {
-            
-            return { value: JSON.parse(raw), raw, endIndex: i };
+            const value = JSON.parse(raw);
+
+            return { value, raw, endIndex }
         } 
         catch (error) {
-            
-            return { value: raw.slice(1, -1), raw, endIndex: i };
+      
+            return { value: raw.slice(1, -1).trim(), raw, endIndex }
         }
     }
     /**
@@ -259,8 +276,16 @@ export class JSONTokenizer {
         }
 
         const raw = rawJson.slice(startIndex, i);
+        const value = Number(raw);
 
-        return { value: Number(raw), raw, endIndex: i - 1 };
+        if(!Number.isNaN(value)){
+
+            return { value, raw, endIndex: i - 1 };
+        }
+        else {
+
+            return this._parseUnknown(rawJson, startIndex);
+        }
     }
     /**
      * @param {String} rawJson A raw json string
@@ -277,6 +302,8 @@ export class JSONTokenizer {
 
             return { value: false, raw: 'false', endIndex: startIndex + 4 };
         }
+
+        return this._parseUnknown(rawJson, startIndex);
     }
     /**
      * @param {*} rawJson A raw json string
@@ -289,6 +316,27 @@ export class JSONTokenizer {
 
             return { value: null, raw: 'null', endIndex: startIndex + 3 };
         }
+
+        return this._parseUnknown(rawJson, startIndex);
+    }
+    _parseUnknown(rawJson, startIndex){
+
+        let i = startIndex;
+        const raw = [];
+
+        while(i < rawJson.length){
+            
+            if(rawJson[i] !== ',' && rawJson[i] !== '}' && rawJson[i] !== ']'){
+                 
+                raw.push(rawJson[i]);
+                i++;
+            }
+            else {
+                break;
+            }
+        }
+
+        return { value: raw.join(''), raw: raw.join(''), endIndex: i - 1 };
     }
 
     /** MARK: _isURL
