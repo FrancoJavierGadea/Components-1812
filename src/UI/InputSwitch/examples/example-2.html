@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONVisualizer examples</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 50px;
+        }
+
+        form {
+            width: 400px;
+            margin: 0 auto;
+            border: 1px solid rgb(141, 11, 11);
+            overflow: hidden;
+            resize: both;
+
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            font-size: 18pt;
+            color: #fff;
+        }
+
+    </style>
+</head>
+<body>
+
+    <form>
+        <label>
+            <input type="checkbox" name="check-1" value="1"> 1
+        </label>
+
+        <label>
+            <input type="checkbox" name="check-2" value="2"> 2
+        </label>
+
+        <label>
+            <input type="checkbox" name="check-3" value="3"> 3
+        </label>
+
+        <label>
+            <input type="checkbox" name="check-4" value="4" checked> 4
+        </label>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <form>
+        <custom-input-switch name="switch-1" value="1">1</custom-input-switch>
+
+        <custom-input-switch name="switch-2" value="2">2</custom-input-switch>
+
+        <custom-input-switch name="switch-3" value="3">3</custom-input-switch>
+
+        <custom-input-switch name="switch-4" value="4" checked>4</custom-input-switch>
+
+        <custom-input-switch disabled></custom-input-switch>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script type="module">
+        const mode = 'development';
+
+        const SOURCES = {
+            development: {
+                InputSwitch: '../src/InputSwitch.js',
+                InputSwitchCSS: '../src/InputSwitch.css',
+            },
+            production: {
+                InputSwitch: '',
+                InputSwitchCSS: ''
+            }
+        }
+
+        const {InputSwitch} = await import(SOURCES[mode].InputSwitch);
+        const InputSwitchCSS = SOURCES[mode].InputSwitchCSS;
+
+        console.log('MODE:', mode);
+        console.log(InputSwitch);
+        console.log(InputSwitchCSS);
+
+        //Load the stylesheet
+        InputSwitch.stylesSheets.links.push(InputSwitchCSS);
+
+        customElements.define('custom-input-switch', InputSwitch);
+    </script>
+
+    <script>
+
+        document.querySelectorAll('form').forEach(form => {
+
+
+            form.addEventListener('submit', e => {
+    
+                e.preventDefault();
+    
+                const {target} = e;
+    
+                const data = new FormData(target);
+    
+                console.log([...data.entries()]);
+            });
+        })
+        
+    </script>
+</body>
+</html>
