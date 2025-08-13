@@ -333,7 +333,7 @@ export class JSONVisualizer extends HTMLElement {
 			const currentBlock = blocksStack.at(-1);
 
 			line.block = currentBlock;
-			currentBlock.content.push(line);
+			currentBlock?.content.push(line);
 		}
 
 		//For incomplete JSON

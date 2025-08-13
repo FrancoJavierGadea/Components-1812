@@ -80,21 +80,10 @@ test('JSONTokenizer parse-string', async (t) => {
 const INCOMPLETE_TARGETS = [
     {
         name: 'incomplete basic json', value: '{"message', 
-        starIndex: 1,
-        expected(){
-            return {
-                value: 'message',
-                raw: '"message"',
-                endIndex: 10
-            }
-        } 
+        starIndex: 1 
     },
     {
         name: 'incomplete json with missing quote', value: '{"message": "hello world', 
-        starIndex: 12,
-    },
-    {
-        name: 'incomplete json with missing closing brace', value: '{"message": "hello world"',
         starIndex: 12,
     },
     {
@@ -130,11 +119,7 @@ test('JSONTokenizer parse-string incomplete', async (t) => {
 
             const result = tokenizer._parseString(rawJSON, i);
 
-            const expected = { 
-                value: value.slice(i + 1), 
-                raw: `"${value.slice(i + 1)}"`,
-                endIndex 
-            };
+            const expected = null;
 
             try {
                 
@@ -142,10 +127,10 @@ test('JSONTokenizer parse-string incomplete', async (t) => {
                 t.assert.deepEqual(result, expected);
             } 
             catch (error) {
+
                 console.log({name, value, result, expected});
                 throw error;
             }
-
         });
     }
 });

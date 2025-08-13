@@ -1,6 +1,6 @@
 /*
-  JSONVisualizer dark-default theme
-  version: 0.0.3
+    JSONVisualizer dark-default theme
+    version: 0.0.3
 */
 custom-json-visualizer.default-dark, custom-json-visualizer.dark {
 
@@ -14,6 +14,8 @@ custom-json-visualizer.default-dark, custom-json-visualizer.dark {
     --json-number: #b5cea8;        
     --json-boolean: #569cd6;       
     --json-null: #dcdcaa;  
+
+	--json-unknown: #f44747;
 
     --json-brace: #ffd700;         
     --json-bracket: #ffd700;       

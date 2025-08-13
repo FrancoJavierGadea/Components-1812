@@ -124,61 +124,82 @@ export class JSONTokenizer {
             //Detecta el inicio del string
             if(char === '"'){
 
-                const { value, endIndex } = this._parseString(minifyJson, i);
+                const result = this._parseString(minifyJson, i);
 
-                const token = { type: 'string', value, tags: ['string', role] };
+                if(result){
 
-                if(detectURL){
-                    const result = this._isURL(value);
-
-                    if(result.isURL){
-                        token.tags.push(`url-${result.type}`);
-                        token.url = result.type;
+                    const { value, endIndex } = result;
+    
+                    const token = { type: 'string', value, tags: ['string', role] };
+    
+                    if(detectURL){
+                        const result = this._isURL(value);
+    
+                        if(result.isURL){
+                            token.tags.push(`url-${result.type}`);
+                            token.url = result.type;
+                        }
                     }
-                }
-                if(detectColor){
-                    const result = this._isColor(value);
-
-                    if(result.isColor){
-                        token.tags.push(`color-${result.type}`);
-                        token.color = result.type;
+                    if(detectColor){
+                        const result = this._isColor(value);
+    
+                        if(result.isColor){
+                            token.tags.push(`color-${result.type}`);
+                            token.color = result.type;
+                        }
                     }
+    
+                    this.tokens.push({ type: 'string-open', value: char, tags: ['string', 'open', role] });
+                    this.tokens.push(token);
+                    this.tokens.push({ type: 'string-close', value: char, tags: ['string', 'close', role] });
+    
+                    i = endIndex + 1; continue;
                 }
-
-                this.tokens.push({ type: 'string-open', value: char, tags: ['string', 'open', role] });
-                this.tokens.push(token);
-                this.tokens.push({ type: 'string-close', value: char, tags: ['string', 'close', role] });
-
-                i = endIndex + 1; continue;
             }
             //Boleanos
             if(char === 't' || char === 'f'){
 
-                const { value, endIndex } = this._parseBoolean(minifyJson, i);
+                const result = this._parseBoolean(minifyJson, i);
 
-                this.tokens.push({ type: 'boolean', value, tags: ['boolean', role, value ? 'true' : 'false'] });
+                if(result){
 
-                i = endIndex + 1; continue;
+                    const { value, endIndex } = result;
+
+                    this.tokens.push({ type: 'boolean', value, tags: ['boolean', role, value ? 'true' : 'false'] });
+    
+                    i = endIndex + 1; continue;
+                }
             }
             //Null
             if(char === 'n'){
                 
-                const { value, endIndex } = this._parseNull(minifyJson, i);
+                const result = this._parseNull(minifyJson, i);
 
-                this.tokens.push({ type: 'null', value, tags: ['null', role] });
+                if(result){
+                    
+                    const { value, endIndex } = result;
 
-                i = endIndex + 1; continue;
+                    this.tokens.push({ type: 'null', value, tags: ['null', role] });
+    
+                    i = endIndex + 1; continue;
+                }
             }
             //Numeros
             if (/[0-9\-]/.test(char)) {
 
-                const { value, endIndex } = this._parseNumber(minifyJson, i);
+                const result = this._parseNumber(minifyJson, i);
 
-                this.tokens.push({ type: 'number', value, tags: ['number', role] });
+                if(result){
 
-                i = endIndex + 1; continue;
+                    const { value, endIndex } = result;
+    
+                    this.tokens.push({ type: 'number', value, tags: ['number', role] });
+    
+                    i = endIndex + 1; continue;
+                }
             }
 
+            //Unknown value if noone othe _parse function works
             const { value, endIndex } = this._parseUnknown(minifyJson, i);
 
             this.tokens.push({ type: 'unknown', value, tags: ['unknown', role] });
@@ -257,7 +278,7 @@ export class JSONTokenizer {
         } 
         catch (error) {
       
-            return { value: raw.slice(1, -1).trim(), raw, endIndex }
+            return null;
         }
     }
     /**
@@ -270,7 +291,7 @@ export class JSONTokenizer {
         let i = startIndex;
 
         // Recorre mientras sea parte de un número
-        while(i < rawJson.length && /[0-9eE\.\+\-]/.test(rawJson[i])){
+        while(i < rawJson.length && !this._isDelimiter(rawJson[i])){
 
             i++;
         }
@@ -284,7 +305,7 @@ export class JSONTokenizer {
         }
         else {
 
-            return this._parseUnknown(rawJson, startIndex);
+            return null;
         }
     }
     /**
@@ -294,16 +315,16 @@ export class JSONTokenizer {
      */
     _parseBoolean(rawJson, startIndex){
 
-        if(rawJson.startsWith('true', startIndex)){
+        if(rawJson.startsWith('true', startIndex) && this._isDelimiter(rawJson[startIndex + 4])){
 
-            return { value: true, raw: 'true', endIndex: startIndex + 3 };
+            return { value: true, raw: 'true', endIndex: startIndex + 3 };  
         }
-        if(rawJson.startsWith('false', startIndex)){
+        if(rawJson.startsWith('false', startIndex) && this._isDelimiter(rawJson[startIndex + 5])){
 
             return { value: false, raw: 'false', endIndex: startIndex + 4 };
         }
 
-        return this._parseUnknown(rawJson, startIndex);
+        return null;
     }
     /**
      * @param {*} rawJson A raw json string
@@ -312,12 +333,12 @@ export class JSONTokenizer {
      */
     _parseNull(rawJson, startIndex){
 
-        if(rawJson.startsWith('null', startIndex)){
+        if(rawJson.startsWith('null', startIndex) && this._isDelimiter(rawJson[startIndex + 4])){
 
             return { value: null, raw: 'null', endIndex: startIndex + 3 };
         }
 
-        return this._parseUnknown(rawJson, startIndex);
+        return null;
     }
     _parseUnknown(rawJson, startIndex){
 
@@ -326,7 +347,7 @@ export class JSONTokenizer {
 
         while(i < rawJson.length){
             
-            if(rawJson[i] !== ',' && rawJson[i] !== '}' && rawJson[i] !== ']'){
+            if(!this._isDelimiter(rawJson[i])){
                  
                 raw.push(rawJson[i]);
                 i++;
@@ -337,6 +358,10 @@ export class JSONTokenizer {
         }
 
         return { value: raw.join(''), raw: raw.join(''), endIndex: i - 1 };
+    }
+    _isDelimiter(char = ''){
+
+        return char === ',' || char === '}' || char === ']';
     }
 
     /** MARK: _isURL

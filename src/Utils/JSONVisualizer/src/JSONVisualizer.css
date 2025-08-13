@@ -59,6 +59,8 @@
     --json-comma: #d4d4d4;         
     --json-colon: #d4d4d4;
 
+    --json-unknownn: #f44747;
+
     --json-folded-message-content: unset;
     --json-folded-message-color: #777;
 
@@ -210,7 +212,10 @@
     span[tags~="colon"]{
         color: var(--json-colon);
         padding-right: 1ch;
-    } 
+    }
+    span[tags~="unknown"]{
+        color: var(--json-unknownn);
+    }
 }
 :host([line-numbers="none"]) .JSONVisualizer .json-line .json-line-number {
 

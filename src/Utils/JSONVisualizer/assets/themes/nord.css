@@ -1,6 +1,6 @@
 /*
-  JSONVisualizer nord theme
-  version: 0.0.3
+	JSONVisualizer nord theme
+	version: 0.0.3
 */
 custom-json-visualizer.nord {
     --json-background: #2e3440;
@@ -11,6 +11,8 @@ custom-json-visualizer.nord {
     --json-number: #b48ead;
     --json-boolean: #88c0d0;
     --json-null: #d08770;
+    
+	--json-unknown: #d14f49;
 
     --json-brace: #eceff4;
     --json-bracket: #eceff4;
@@ -34,4 +36,5 @@ custom-json-visualizer.nord {
     --indentation-guides-lines-color: #3b4252;
 
     --json-folded-message-color: #888;
+
 }

@@ -1,6 +1,6 @@
 /*
-  JSONVisualizer iceberg theme
-  version: 0.0.3
+    JSONVisualizer iceberg theme
+    version: 0.0.3
 */
 custom-json-visualizer.iceberg {
     --font: Consolas, "Courier New", monospace, sans-serif;
@@ -13,7 +13,9 @@ custom-json-visualizer.iceberg {
     --json-number: #447799;
     --json-boolean: #3366cc;
     --json-null: #77aadd;
-
+    
+	--json-unknown: #bb4444;
+    
     --json-brace: #225577;
     --json-bracket: #225577;
     --json-comma: #88aacc;
@@ -36,4 +38,5 @@ custom-json-visualizer.iceberg {
     --indentation-guides-lines-color: #dceff8;
     
     --json-folded-message-color: #5588aa;
+
 }

@@ -1,7 +1,6 @@
 import {test} from "node:test";
 import { JSONTokenizer } from "../src/JSONTokenizer.js";
 
-
 const TARGETS = [
     {name: 'integer', number: 1812},
     {name: 'negative integer', number: -2085},
@@ -46,6 +45,55 @@ test('JSONTokenizer parse-number', async (t) => {
 
             t.assert.equal(rawJSON.at(i), String(number).at(0));
             t.assert.equal(rawJSON.at(result.endIndex), String(number).at(-1));
+            t.assert.deepEqual(result, expected);
+        });
+    }
+});
+
+const INCOMPLETE_TARGETS = [
+    {
+        name: 'incomplete +-', value: '{"number": +1-81+2',
+        startIndex: 11
+    },
+    {
+        name: 'incomplete integer with letter', value: '{"number": 123f',
+        startIndex: 11
+    },
+    {
+        name: 'incomplete negative integer', value: '{"number": -123d',
+        startIndex: 11
+    },
+    {
+        name: 'incomplete real number', value: '{"number": 123.456-',
+        startIndex: 11
+    },
+    {
+        name: 'incomplete negative real number', value: '{"number": -123.456+',
+        startIndex: 11
+    },
+    {
+        name: 'incomplete scientific notation', value: '{"number": 1.23e"',
+        startIndex: 11
+    },
+    {
+        name: 'incomplete negative scientific notation', value: '{"number": -1.2"3e',
+        startIndex: 11
+    },
+];
+
+test('JSONTokenizer parse-number incomplete', async (t) => {
+
+    for (const target of INCOMPLETE_TARGETS) {
+
+        const {name, value, startIndex: i} = target;
+
+        await t.test(name, (t) => {
+    
+            const tokenizer = new JSONTokenizer(); 
+            const result = tokenizer._parseNumber(value, i);
+
+            const expected = null;
+
             t.assert.deepEqual(result, expected);
         });
     }

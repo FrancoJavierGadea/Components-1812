@@ -1,6 +1,6 @@
 /*
-  JSONVisualizer solarized-light theme
-  version: 0.0.3
+    JSONVisualizer solarized-light theme
+    version: 0.0.3
 */
 custom-json-visualizer.solarized-light {
     --json-background: #fdf6e3;
@@ -11,6 +11,8 @@ custom-json-visualizer.solarized-light {
     --json-number: #859900;
     --json-boolean: #cb4b16;
     --json-null: #6c71c4;
+
+	--json-unknown: #dc322f;
 
     --json-brace: #93a1a1;
     --json-bracket: #93a1a1;
