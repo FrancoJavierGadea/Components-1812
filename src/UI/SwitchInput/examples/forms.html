@@ -61,15 +61,15 @@
     </form>
 
     <form>
-        <custom-input-switch name="switch-1" value="1">1</custom-input-switch>
+        <custom-switch-input name="switch-1" value="1">1</custom-switch-input>
 
-        <custom-input-switch name="switch-2" value="2">2</custom-input-switch>
+        <custom-switch-input name="switch-2" value="2">2</custom-switch-input>
 
-        <custom-input-switch name="switch-3" value="3">3</custom-input-switch>
+        <custom-switch-input name="switch-3" value="3">3</custom-switch-input>
 
-        <custom-input-switch name="switch-4" value="4" checked>4</custom-input-switch>
+        <custom-switch-input name="switch-4" value="4" checked>4</custom-switch-input>
 
-        <custom-input-switch disabled></custom-input-switch>
+        <custom-switch-input disabled></custom-switch-input>
 
         <button type="submit">Submit</button>
     </form>
@@ -79,26 +79,26 @@
 
         const SOURCES = {
             development: {
-                InputSwitch: '../src/InputSwitch.js',
-                InputSwitchCSS: '../src/InputSwitch.css',
+                SwitchInput: '../src/SwitchInput.js',
+                SwitchInputCSS: '../src/SwitchInput.css',
             },
             production: {
-                InputSwitch: '',
-                InputSwitchCSS: ''
+                SwitchInput: '',
+                SwitchInputCSS: ''
             }
         }
 
-        const {InputSwitch} = await import(SOURCES[mode].InputSwitch);
-        const InputSwitchCSS = SOURCES[mode].InputSwitchCSS;
+        const {SwitchInput} = await import(SOURCES[mode].SwitchInput);
+        const SwitchInputCSS = SOURCES[mode].SwitchInputCSS;
 
         console.log('MODE:', mode);
-        console.log(InputSwitch);
-        console.log(InputSwitchCSS);
+        console.log(SwitchInput);
+        console.log(SwitchInputCSS);
 
         //Load the stylesheet
-        InputSwitch.stylesSheets.links.push(InputSwitchCSS);
+        SwitchInput.stylesSheets.links.push(SwitchInputCSS);
 
-        customElements.define('custom-input-switch', InputSwitch);
+        customElements.define('custom-switch-input', SwitchInput);
     </script>
 
     <script>

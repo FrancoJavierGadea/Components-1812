@@ -1,2 +1,0 @@
-# Basic Switch custom element
-

@@ -1,6 +1,6 @@
 
 
-export class InputSwitch extends HTMLElement {
+export class SwitchInput extends HTMLElement {
 
     static formAssociated = true;
 
@@ -19,19 +19,23 @@ export class InputSwitch extends HTMLElement {
         super();
 
         this._internals = this.attachInternals();
+        //this.tabIndex = 0;
 
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
             <label>
                 <input type="checkbox" />
-                <div class="track">
+                <div class="switch">
+                    <div class="track">
+                        <div class="track-items">
+                            <slot name="track"></slot>
+                        </div>
+                    </div>
                     <div class="thumb">
                         <slot name="thumb"></slot>
                     </div>
                 </div>
-                <div class="content">
-                    <slot></slot>
-                </div>
+                <div class="content"><slot></slot></div>
             </label>
         `;
 
@@ -39,7 +43,7 @@ export class InputSwitch extends HTMLElement {
 
         //MARK: CSS and Styles
         Promise.allSettled(
-			InputSwitch.stylesSheets.links.map((styleSheet) => {
+			SwitchInput.stylesSheets.links.map((styleSheet) => {
 				const link = document.createElement('link');
 				link.rel = 'stylesheet';
 				link.href = styleSheet;
@@ -69,13 +73,13 @@ export class InputSwitch extends HTMLElement {
 			this.setAttribute('ready-links', '');
 		});
 
-		InputSwitch.stylesSheets.raw.forEach((style) => {
+		SwitchInput.stylesSheets.raw.forEach((style) => {
 			const styleElement = document.createElement('style');
 			styleElement.textContent = style;
 			this.shadowRoot.prepend(styleElement);
 		});
 
-		this.shadowRoot.adoptedStyleSheets = InputSwitch.stylesSheets.adopted;
+		this.shadowRoot.adoptedStyleSheets = SwitchInput.stylesSheets.adopted;
     }
 
 
@@ -168,3 +172,5 @@ export class InputSwitch extends HTMLElement {
         return this.getAttribute('value') ?? 'on';//same are native checkbox
     }
 }
+
+export default SwitchInput;
