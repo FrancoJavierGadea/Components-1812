@@ -24,15 +24,17 @@ export class SwitchInput extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
             <label>
-                <input type="checkbox" />
+                <input type="checkbox" ${this.checked ? 'checked' : ''} />
                 <div class="switch">
                     <div class="track">
-                        <div class="track-items">
+                        <div class="track-item">
                             <slot name="track"></slot>
                         </div>
-                    </div>
-                    <div class="thumb">
-                        <slot name="thumb"></slot>
+                        <div class="thumb">
+                            <div class="thumb-item">
+                                <slot name="thumb"></slot>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="content"><slot></slot></div>
