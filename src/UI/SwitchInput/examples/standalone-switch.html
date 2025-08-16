@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standalone switch</title>
+
+    <link rel="stylesheet" href="../assets/standalone-switch.css">
+
+    <style>
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: black;
+            color: #fff;
+        }
+        body {  
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0px 30px;
+
+            input {
+
+                font-size: 50px;
+            }
+
+
+            h5 {
+                width: 100%;
+                text-align: center;
+                margin-block: 20px;
+                font-family: consolas, monospace;
+                font-size: 18pt;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+     <div class="horizontal">
+        <section>
+            <h5>Basic</h5>
+    
+            <input type="checkbox" data-switch />
+            <input type="checkbox" data-switch checked />
+            <input type="checkbox" data-switch tabindex="0" />
+        </section>
+        <section>
+            <h5>Rounded and thin</h5>
+    
+            <input type="checkbox" data-switch="rounded" />
+            <input type="checkbox" data-switch="thin-track" />
+            <input type="checkbox" data-switch="thin-track rounded" />
+    
+            <input type="checkbox" data-switch="thin-track" tabindex="0" />
+            <input type="checkbox" data-switch="thin-track rounded" tabindex="0" />
+        </section>
+    
+        <section>
+            <h5>Disabled</h5>
+    
+            <input type="checkbox" data-switch tabindex="0" disabled />
+            <input type="checkbox" data-switch="rounded" disabled />
+            <input type="checkbox" data-switch="thin-track" disabled />
+            <input type="checkbox" data-switch="thin-track rounded" disabled />
+        </section>
+        <section>
+            <h5>Thumb content</h5>
+    
+            <input type="checkbox" data-switch />
+            
+            <input type="checkbox" data-switch/>
+    
+            <input type="checkbox" data-switch="thin-track rounded" />
+            
+        </section>
+        <section>
+            <h5>Track content</h5>
+            <input type="checkbox" data-switch />
+
+            <input type="checkbox" data-switch />
+
+            <input type="checkbox" data-switch="thin-track rounded" />
+            
+        </section>
+    </div>
+    
+    <div class="vertical">
+        <section>
+            <h5>Basic vertical</h5>
+            <input type="checkbox" data-switch="vertical" />
+            <input type="checkbox" data-switch="vertical" checked />
+            <input type="checkbox" data-switch="vertical" tabindex="0" />
+        </section>
+        <section>
+            <h5>Vertical rounded and thin</h5>
+    
+            <input type="checkbox" data-switch="vertical rounded" />
+            <input type="checkbox" data-switch="vertical thin-track" />
+            <input type="checkbox" data-switch="vertical thin-track rounded" />
+        </section>
+        <section>
+            <h5>Vertical disabled</h5>    
+            <input type="checkbox" data-switch="vertical" tabindex="0" disabled />
+            <input type="checkbox" data-switch="vertical rounded" disabled />
+            <input type="checkbox" data-switch="vertical thin-track" disabled />
+            <input type="checkbox" data-switch="vertical thin-track rounded" disabled />
+        </section>
+        <section>
+            <h5>Vertical thumb content</h5>    
+    
+            <input type="checkbox" data-switch="vertical" />
+    
+            <input type="checkbox" data-switch="vertical" />
+    
+            <input type="checkbox" data-switch="vertical rounded" />
+    
+            <input type="checkbox" data-switch="vertical thin-track rounded" />
+        </section>
+        <section>
+            <h5>Vertical track content</h5>  
+            <input type="checkbox" data-switch="vertical"/>
+
+            <input type="checkbox" data-switch="vertical rounded"/>
+    
+            <input type="checkbox" data-switch="vertical thin-track rounded"/>
+
+        </section>
+    </div>
+    
+    <style>
+        .other-styles input[data-switch] {
+            --sw-track-bg-image: linear-gradient(45deg, #f43f5e, #f97316);
+            --sw-checked-track-bg-image: linear-gradient(45deg, #22c55e, #16a34a);
+
+            --sw-thumb-bg-image: linear-gradient(45deg, #a855f7, #6366f1);
+            --sw-checked-thumb-bg-image: linear-gradient(45deg, #06b6d4, #0284c7);
+        }
+    </style>
+    <div class="other-styles">
+        <section>
+            <h5>Gradient</h5>
+
+            <input type="checkbox" data-switch/>
+            <input type="checkbox" data-switch="rounded" checked />
+            <input type="checkbox" data-switch="rounded thin-track" tabindex="0" />
+    
+            <input type="checkbox" data-switch="vertical">
+            <input type="checkbox" data-switch="rounded vertical" checked>
+            <input type="checkbox" data-switch="rounded thin-track vertical" tabindex="0" />
+        </section>
+    </div>
+
+</body>
+</html>

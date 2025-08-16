@@ -24,7 +24,7 @@ export class SwitchInput extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
             <label>
-                <input type="checkbox" ${this.checked ? 'checked' : ''} />
+                <input type="checkbox" />
                 <div class="switch">
                     <div class="track">
                         <div class="track-item">
@@ -95,10 +95,12 @@ export class SwitchInput extends HTMLElement {
         if(name === 'checked'){
 
             this._internals.setFormValue(this.checked ? this.value : null, this.checked ? 'checked' : 'unchecked');
+            if(this.#input) this.#input.checked = this.checked;
             return;
         }
         if(name === 'disabled'){
-            this.disabled = newValue !== null;
+            this.disabled = this.disabled;
+            if(this.#input) this.#input.checked = this.disabled;
             return;
         }
     }
