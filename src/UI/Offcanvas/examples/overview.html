@@ -1,0 +1,61 @@
+<!DOCTYPE html
+>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <custom-offcanvas open variant="right global" handle-button>
+        <div slot="header">Header</div>
+        <div>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+        </div>
+        <div slot="footer">Footer</div>
+    </custom-offcanvas>
+    
+
+    <script type="module">
+        const mode = 'development';
+
+        const SOURCES = {
+            development: {
+                Offcanvas: '../src/Offcanvas.js',
+                OffcanvasCSS: '../src/Offcanvas.css',
+            },
+            production: {
+                Offcanvas: '',
+                OffcanvasCSS: ''
+            }
+        }
+
+        const {Offcanvas} = await import(SOURCES[mode].Offcanvas);
+        const OffcanvasCSS = SOURCES[mode].OffcanvasCSS;
+
+        console.log('MODE:', mode);
+        console.log(Offcanvas);
+        console.log(OffcanvasCSS);
+
+        //Load the stylesheet
+        Offcanvas.stylesSheets.links.push(OffcanvasCSS);
+
+        customElements.define('custom-offcanvas', Offcanvas);
+    </script>
+</body>
+</html>

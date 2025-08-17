@@ -1,0 +1,101 @@
+<!DOCTYPE html
+>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2 - Panel placement</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        section {
+            width: 500px;
+            height: 500px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            position: relative;
+            margin: 20px auto;
+            resize: both;
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <custom-offcanvas open variant="left" handle-button>
+            <div slot="header">Header</div>
+            <div>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            </div>
+            <div slot="footer">Footer</div>
+        </custom-offcanvas>
+    </section>
+
+    <section>
+        <custom-offcanvas open variant="right" handle-button>
+            <div slot="header">Header</div>
+            <div>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            </div>
+            <div slot="footer">Footer</div>
+        </custom-offcanvas>
+    </section>
+
+    <section>
+        <custom-offcanvas open variant="bottom" handle-button>
+            <div slot="header">Header</div>
+            <div>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            </div>
+            <div slot="footer">Footer</div>
+        </custom-offcanvas>
+    </section>
+
+    <section>
+        <custom-offcanvas open variant="top" handle-button>
+            <div slot="header">Header</div>
+            <div>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+            </div>
+            <div slot="footer">Footer</div>
+        </custom-offcanvas>
+    </section>
+
+    
+    <script type="module">
+        const mode = 'development';
+
+        const SOURCES = {
+            development: {
+                Offcanvas: '../src/Offcanvas.js',
+                OffcanvasCSS: '../src/Offcanvas.css',
+            },
+            production: {
+                Offcanvas: '',
+                OffcanvasCSS: ''
+            }
+        }
+
+        const {Offcanvas} = await import(SOURCES[mode].Offcanvas);
+        const OffcanvasCSS = SOURCES[mode].OffcanvasCSS;
+
+        console.log('MODE:', mode);
+        console.log(Offcanvas);
+        console.log(OffcanvasCSS);
+
+        //Load the stylesheet
+        Offcanvas.stylesSheets.links.push(OffcanvasCSS);
+
+        customElements.define('custom-offcanvas', Offcanvas);
+    </script>
+</body>
+</html>

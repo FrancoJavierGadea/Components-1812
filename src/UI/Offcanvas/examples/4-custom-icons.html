@@ -1,0 +1,47 @@
+<!DOCTYPE html
+>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4 - Custom icons</title>
+</head>
+<body>
+
+    <custom-offcanvas open variant="right global" handle-button>
+
+        <div slot="close-button">❌</div>
+
+        <div slot="handle-button" data-rotate-icon>➡️</div>
+
+    </custom-offcanvas>
+    
+
+    <script type="module">
+        const mode = 'development';
+
+        const SOURCES = {
+            development: {
+                Offcanvas: '../src/Offcanvas.js',
+                OffcanvasCSS: '../src/Offcanvas.css',
+            },
+            production: {
+                Offcanvas: '',
+                OffcanvasCSS: ''
+            }
+        }
+
+        const {Offcanvas} = await import(SOURCES[mode].Offcanvas);
+        const OffcanvasCSS = SOURCES[mode].OffcanvasCSS;
+
+        console.log('MODE:', mode);
+        console.log(Offcanvas);
+        console.log(OffcanvasCSS);
+
+        //Load the stylesheet
+        Offcanvas.stylesSheets.links.push(OffcanvasCSS);
+
+        customElements.define('custom-offcanvas', Offcanvas);
+    </script>
+</body>
+</html>

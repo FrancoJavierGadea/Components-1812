@@ -86,7 +86,7 @@ export class SwitchInput extends HTMLElement {
 
 
     //MARK: Callback life cycle
-    static observedAttributes = ['checked', 'disabled'];
+    static observedAttributes = ['checked', 'disabled', 'variant'];
 
     attributeChangedCallback(name, oldValue, newValue){
 
@@ -95,12 +95,20 @@ export class SwitchInput extends HTMLElement {
         if(name === 'checked'){
 
             this._internals.setFormValue(this.checked ? this.value : null, this.checked ? 'checked' : 'unchecked');
+            
             if(this.#input) this.#input.checked = this.checked;
+
+            this.shadowRoot.querySelector('.switch')?.toggleAttribute('checked', this.checked);
             return;
         }
         if(name === 'disabled'){
             this.disabled = this.disabled;
             if(this.#input) this.#input.checked = this.disabled;
+            return;
+        }
+        if(name === 'variant'){
+            const switchElement = this.shadowRoot.querySelector('.switch');
+            this.variant ? switchElement?.setAttribute('variant', this.variant) : switchElement?.removeAttribute('variant');
             return;
         }
     }
@@ -174,6 +182,13 @@ export class SwitchInput extends HTMLElement {
     }
     get value(){
         return this.getAttribute('value') ?? 'on';//same are native checkbox
+    }
+
+    set variant(value){
+        value ? this.setAttribute('variant', value) : this.removeAttribute('variant');
+    }
+    get variant(){
+        return this.getAttribute('variant');
     }
 }
 
