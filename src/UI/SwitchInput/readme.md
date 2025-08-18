@@ -1,2 +1,0 @@
-# Switch input custom element
-

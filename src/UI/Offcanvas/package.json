@@ -1,14 +1,21 @@
 {
     "name": "@components-1812/offcanvas",
     "description": "A web component for custom offcanvas, lateral panel",
-    "keywords": ["web-components", "web-components-library", "offcanvas", "lateral-panel", "drawer", "slide-out", "sheet"],
+    "keywords": [
+        "web-components",
+        "web-components-library",
+        "offcanvas",
+        "lateral-panel",
+        "drawer",
+        "slide-out",
+        "sheet"
+    ],
     "author": "Franco Javier Gadea",
     "license": "MIT",
     "version": "0.0.1",
     "repository": {
         "type": "git",
-        "url": "https://github.com/FrancoJavierGadea/Components-1812.git",
-        "directory": "src/UI/Offcanvas"
+        "url": "https://github.com/components-1812/offcanvas"
     },
     "type": "module",
     "exports": {
@@ -21,14 +28,22 @@
         "./define": "./src/define.js",
         "./define.js": "./src/define.js",
         "./assets/*": "./assets/*",
-        "./src/*": "./src/*"
+        "./src/*": "./src/*",
+        "./dist/*": "./dist/*"
     },
     "files": [
         "src/*",
+        "dist/*",
         "assets/themes/*",
         "assets/icons/*",
         "assets/preview.webp"
     ],
     "main": "./src/Offcanvas.js",
-    "style": "./src/Offcanvas.css"
+    "style": "./src/Offcanvas.css",
+    "devDependencies": {
+        "esbuild": "^0.25.9"
+    },
+    "scripts": {
+        "build": "node build.js"
+    }
 }
