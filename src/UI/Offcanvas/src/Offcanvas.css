@@ -63,6 +63,9 @@
 :host([variant~="global"]) {
     --offcanvas-position: fixed;
 }
+:host([variant~="local"]) {
+    --offcanvas-position: absolute;
+}
 :host .offcanvas {
     position: var(--offcanvas-position);
     top: 0;
@@ -81,7 +84,7 @@
     pointer-events: none;
     display: flex;
 
-    &[variant~="left"], &:not([variant]) {
+    &[variant~="left"], & {
         flex-direction: row;
     }
     &[variant~="right"] {
@@ -148,7 +151,7 @@
         }
     }
 
-    &[variant~="left"] .panel, &:not([variant]) .panel {
+    &[variant~="left"] .panel, .panel {
         border-right: var(--offcanvas-panel-border);
         border-radius: 0 var(--offcanvas-panel-border-radius) var(--offcanvas-panel-border-radius) 0;
         margin: 0 0 0 calc(-1 * var(--offcanvas-panel-width));
@@ -239,7 +242,7 @@
 
         margin: auto;
     }
-    &[variant~="left"], &:not([variant]) {
+    &[variant~="left"], & {
 
         .handle-button {
             inset: 0 auto 0 0;

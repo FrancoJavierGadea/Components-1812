@@ -1,5 +1,220 @@
 # Offcanvas custom element
 
+# JSON Visualizer custom element
+
+![](./assets/preview-2.webp)
+
+## Examples
+
+- [**Codepen**](https://codepen.io/collection/JYEwMK): 
+
+
+- [**Stackblitz**]():
+
+
+
+<br>
+
+## Installation
+
+#### NPM
+
+```bash
+npm install @components-1812/offcanvas
+```
+
+- [`JSON visualizer package`](https://www.npmjs.com/package/@components-1812/offcanvas)
+
+#### CDN
+
+```html
+<script type="module">
+    import Offcanvas from 'https://cdn.jsdelivr.net/npm/@components-1812/offcanvas@0.0.1/src/Offcanvas.min.js';
+
+    //Load the stylesheet
+    Offcanvas.stylesSheets.links.push('https://cdn.jsdelivr.net/npm/@components-1812/offcanvas@0.0.1/src/Offcanvas.min.css');
+
+    console.log(Offcanvas);
+
+    customElements.define('custom-offcanvas', Offcanvas);
+</script>
+```
+
+- **jsdelivr**: [`Offcanvas package`](https://www.jsdelivr.com/package/npm/@components-1812/offcanvas)
+[`Offcanvas.js`](https://cdn.jsdelivr.net/npm/@components-1812/offcanvas@0.0.1/src/Offcanvas.min.js)
+[`Offcanvas.css`](https://cdn.jsdelivr.net/npm/@components-1812/offcanvas@0.0.1/src/Offcanvas.css)
+
+- **unpkg**: [`Offcanvas package`](https://app.unpkg.com/@components-1812/offcanvas)
+[`Offcanvas.js`](https://unpkg.com/@components-1812/offcanvas@0.0.1/src/Offcanvas.js)
+[`Offcanvas.css`](https://unpkg.com/@components-1812/offcanvas@0.0.1/src/Offcanvas.css)
+
+<br>
+
+## Usage
+
+If you use Vite or a framework based on Vite such as Astro, you can import the component in a client-side script file:
+
+```js
+import '@components-1812/offcanvas';
+```
+
+and use it in your HTML:
+
+```html
+<custom-offcanvas open variant="right global" handle-button>
+
+    <!-- Panel content -->
+    <div slot="header">Header</div>
+
+    <div>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+    </div>
+
+    <div slot="footer">Footer</div>
+
+    <!--Custom icons -->
+    <div slot="close-button">❌</div>
+    <div slot="handle-button" data-rotate-icon>➡️</div>
+
+    <!-- Backdrop content -->
+    <div slot="backdrop" style="position: absolute; top: 0; left: 0;">
+        <p>This is the backdrop content.</p>
+        <p>You can add any content here.</p>
+    </div>
+</custom-offcanvas>
+```
+
+> **Note:**
+> 
+> If you are using a builder or framework that doesn't support import `?raw`, you need to load the component and its stylesheets manually.
+> 
+> see [Adding CSS stylesheets manually](#adding-css-stylesheets-manually)
+
+
+<br>
+
+## Adding CSS stylesheets manually
+
+If you want to add custom stylesheets to the component or need to load stylesheets from a different path, you can do it like this:
+
+- ### AdoptedStyleSheets (recommended)
+
+    Using your builder’s import raw method, `CSSStyleSheet`, and the component’s `AdoptedStyleSheets` property:
+
+    ```js
+    import Offcanvas from "@components-1812/offcanvas/Offcanvas.js";
+    import OffcanvasRawCSS from "@components-1812/offcanvas/Offcanvas.css?raw";
+
+    //Add the stylesheets to the component
+    const OffcanvasCSS = new CSSStyleSheet();
+
+    OffcanvasCSS.replaceSync(OffcanvasRawCSS);
+
+    Offcanvas.stylesSheets.adopted.push(OffcanvasCSS);
+
+    //Define the component
+    import('@components-1812/offcanvas/define');
+    ```
+
+- ### Raw CSS in a `<style>` tag
+
+    Using a `<style>` tag inside the shadow root of the component:
+
+    ```js
+    import Offcanvas from "@components-1812/offcanvas/Offcanvas.js";
+    import OffcanvasRawCSS from "@components-1812/offcanvas/Offcanvas.css?raw";
+
+    //Add the stylesheets to the component
+    Offcanvas.stylesSheets.raw.push(OffcanvasCSS);
+
+    //Define the component
+    import('@components-1812/offcanvas/define');
+    ```
+
+- ### External CSS files in a `<link>` tag
+
+    Using a `<link>` tag inside the shadow root of the component:
+
+    ```js
+    import Offcanvas from "@components-1812/offcanvas/Offcanvas.js";
+    import OffcanvasCSS from "@components-1812/offcanvas/Offcanvas.css?url";
+
+    //Add the stylesheets to the component
+    Offcanvas.stylesSheets.links.push(OffcanvasCSS);
+
+    //Define the component
+    import('@components-1812/offcanvas/define');
+    ```
+
+> **Note:**
+> 
+> `import('@components-1812/offcanvas/define')` calls `customElements.define('custom-offcanvas', Offcanvas);` in `define.js`
+
+<br>
+
+## Customization: CSS Variables
+
+```css
+--offcanvas-position: absolute;
+--offcanvas-z-index: 10000;
+
+/* Panel */
+--offcanvas-panel-width: 300px;
+--offcanvas-panel-height: 100%;
+--offcanvas-panel-padding: 10px;
+--offcanvas-panel-transition: margin 0.3s ease-in-out;
+
+--offcanvas-panel-header-padding: 10px;
+--offcanvas-panel-body-padding: 10px;
+--offcanvas-panel-footer-padding: 10px;
+
+--offcanvas-panel-bg: #222;
+--offcanvas-panel-color: #fff;
+
+--offcanvas-panel-header-bg: #222;
+--offcanvas-panel-header-color: #fff;
+
+--offcanvas-panel-footer-bg: #222;
+--offcanvas-panel-footer-color: #fff;
+
+--offcanvas-panel-border-width: 1px;
+--offcanvas-panel-border-style: solid;
+--offcanvas-panel-border-color: #ccc;
+--offcanvas-panel-border: var(--offcanvas-panel-border-width) var(--offcanvas-panel-border-style) var(--offcanvas-panel-border-color);
+
+--offcanvas-panel-border-radius: 0px;
+
+/* Backdrop */
+--offcanvas-backdrop-bg: rgba(0, 0, 0, 0.5);
+--offcanvas-backdrop-color: #fff;
+--offcanvas-backdrop-transition: background-color 0.3s ease-in-out;
+
+/* Close button */
+--offcanvas-close-button-bg: transparent;
+--offcanvas-close-button-color: #fff;
+--offcanvas-close-button-font-size: 1.5rem;
+--offcanvas-close-button-cursor: pointer;
+--offcanvas-close-button-padding: 10px;
+--offcanvas-close-button-border: none;
+--offcanvas-close-button-width: 40px;
+--offcanvas-close-button-height: 40px;
+
+/* Handle button */
+--offcanvas-handle-button-bg: #444;
+--offcanvas-handle-button-color: #fff;
+--offcanvas-handle-button-padding: 5px;
+--offcanvas-handle-button-border: none;
+--offcanvas-handle-button-cursor: pointer;
+--offcanvas-handle-button-font-size: 1rem;
+--offcanvas-handle-button-width: 50px;
+--offcanvas-handle-button-height: 100px;
+--offcanvas-handle-button-border-radius: 10px;
+--offcanvas-handle-button-shadow: unset;
+```
+
+
+
+<br><br>
 
 
 ## Open and close
@@ -185,3 +400,95 @@ With the handle-button attribute, the component automatically adds a button insi
 ```html
 <custom-offcanvas variant="right" handle-button></custom-offcanvas>
 ```
+
+<br><br>
+
+## API
+
+### Attributes
+
+- `variant`: Panel position or visual style.
+
+    - Panel position: `left`, `top`, `right`, `bottom`
+    - Panel scroll: `scroll-full`, `scroll-inner`, `scroll-body`
+    - Page position: `global`, `local`
+
+
+- `open` (boolean, default false): Whether the panel is open.
+
+- `handle-button` (boolean, default false): Whether to show a floating handle button.
+
+### Properties
+
+#### Mirrored
+
+- `variant` (string): Panel position or visual style.
+
+- `open` (boolean): Whether the panel is open.
+
+- `handleButton` (boolean): Whether the handle button is visible.
+
+### Methods
+
+`show()`: Opens the panel (open = true).
+
+`hide()`: Closes the panel (open = false).
+
+`toggle(force?: boolean)`: Toggles the panel. If force is `true` or `false`, sets the panel state accordingly.
+
+### Events
+
+- `ready-links`: Fired when all external stylesheet links have finished loading. Provides a detail with the results of each stylesheet.
+
+- `ready`: Dispatched when the component has finished initializing (end of connectedCallback)
+
+### Static properties
+
+`VERSION` (string): Component version (0.0.1).
+
+`DEFAULT_TAG_NAME` (string): Default tag name (`custom-offcanvas`) use it to define the custom element in `index.js` and `define.js`
+
+`DEFAULT_ICONS` (object): Default svg icons for `close-button` and `handle-button`.
+
+```js
+Offcanvas.DEFAULT_ICONS = {
+    'close-button': `<svg>...</svg>`,
+    'handle-button': `<svg data-rotate-icon>...</svg>`
+}
+```
+
+`stylesSheets` (object): Contains `links`, `adopted`, and `raw` stylesheets to apply to the component.
+
+```js
+Offcanvas.stylesSheets = {
+    links: [],//string url css source
+    adopted: [],//CSSStyleSheet instances
+    raw: [],//string raw css
+};
+```
+
+### Slots
+
+- `default`: Main content of the panel
+- `header`: Header content of the panel
+- `footer`: Footer content of the panel
+
+- `close-button`: Icon or content for the close button in the header of the panel
+- `handle-button`: Icon or content for the handle button if added
+
+- `backdrop`: Content inside the backdrop (around the panel)
+
+
+<br><br>
+
+## License
+
+This package is distributed under the [MIT license](./LICENSE).
+
+## Credits
+
+Default icons used in this package are sourced from the [Bootstrap Icons](https://icons.getbootstrap.com/) project, licensed under the MIT license.  
+© 2019–2024 The Bootstrap Authors 
+
+- [x-lg](https://icons.getbootstrap.com/icons/x-lg/)
+- [arrow-bar-right](https://icons.getbootstrap.com/icons/arrow-bar-right/)

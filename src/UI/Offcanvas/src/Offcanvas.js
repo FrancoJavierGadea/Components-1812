@@ -1,5 +1,22 @@
 
-
+/**
+ * Lateral sliding panel (offcanvas).
+ *
+ * @element custom-offcanvas
+ *
+ * @attr {("left"|"right")} [variant="left"] - Panel position or visual style.
+ * @attr {boolean} [open] - Whether the panel is open.
+ * @attr {boolean} [handle-button] - Whether to show a floating handle button.
+ *
+ * @fires ready-links - Fired when all external stylesheet links have finished loading.
+ * @fires ready - Dispatched when the component has finished initializing (end of connectedCallback).
+ * 
+ * @slot header - Header content.
+ * @slot close-button - Icon or content for the close button.
+ * @slot default - Panel body content.
+ * @slot footer - Footer content.
+ * @slot backdrop - Slot inside the backdrop.
+ */
 class Offcanvas extends HTMLElement {
 
     static VERSION = '0.0.1';
@@ -105,6 +122,9 @@ class Offcanvas extends HTMLElement {
 
         this.shadowRoot.querySelector('.close-button')
             .addEventListener('click', this.#handleClose);
+
+        this.dispatchEvent(new CustomEvent('ready'));
+		this.setAttribute('ready', '');
     }
     disconnectedCallback() {
 
@@ -126,6 +146,13 @@ class Offcanvas extends HTMLElement {
         if(name === 'open'){
 
             this.#offcanvas?.toggleAttribute('open', this.open);
+
+            this.dispatchEvent( new CustomEvent('toggle', {
+                detail: { open: this.open },
+                bubbles: true,
+                composed: true
+            }));
+
             return;
         }
         if(name === 'handle-button'){
@@ -148,6 +175,7 @@ class Offcanvas extends HTMLElement {
     hide(){
         this.open = false;
     }
+    /** @param {boolean | undefined} force  */
     toggle(force){
         if(typeof force === 'boolean'){
             this.open = force;
